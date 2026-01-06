@@ -347,3 +347,104 @@ If you use this code in research, please cite the original pyscfad project:
 - [example.py](example.py) - Runnable examples
 - [tests/test_eigh.py](tests/test_eigh.py) - Comprehensive test suite
 - [tests/test_eigh_hard.py](tests/test_eigh_hard.py) - Hard cases: ill-conditioned and degenerate matrices
+
+
+## Quick Start with Pip
+
+### Installation
+
+The project is now a standard Python package. You can install it directly from the source:
+
+```bash
+# Basic installation (CPU)
+pip install .
+
+# Installation with local CUDA support (recommended for this environment)
+pip install .[cuda-local]
+
+# Installation with bundled CUDA wheels
+pip install .[cuda]
+```
+
+### Basic Usage
+
+Once installed, you can use it like any other JAX-based library:
+
+```python
+import jax
+import jax.numpy as jnp
+from eigh import eigh
+
+# Enable float64 support in JAX
+jax.config.update("jax_enable_x64", True)
+
+# Standard eigenvalue problem
+A = jnp.array([[1., 2.], [2., 1.]])
+w, v = eigh(A)
+
+# Generalized eigenvalue problem (A @ v = B @ v @ w)
+B = jnp.eye(2) + 0.1
+w, v = eigh(A, B)
+
+# Automatic differentiation
+def loss(A):
+    w, _ = eigh(A)
+    return jnp.sum(w**2)
+
+gradient = jax.grad(loss)(A)
+```
+
+## API Reference
+
+### `eigh(a, b=None, *, lower=True, eigvals_only=False, type=1, deg_thresh=1e-9)`
+
+Scipy-compatible interface for eigenvalue problems.
+
+- **a**, **b**: Input matrices (Hermitian/Symmetric).
+- **lower**: If True, use the lower triangle; otherwise upper.
+- **eigvals_only**: If True, return only eigenvalues.
+- **type**: Problem type (1: `A@v = B@v@λ`, 2: `A@B@v = v@λ`, 3: `B@A@v = v@λ`).
+- **deg_thresh**: Threshold for treating eigenvalues as degenerate during differentiation.
+
+### `eigh_gen(a, b, *, lower=True, itype=1, deg_thresh=1e-9)`
+
+Lower-level interface for generalized eigenvalue problems (always returns both eigenvalues and eigenvectors).
+
+## Testing
+
+Run the comprehensive test suite to verify the installation:
+
+```bash
+# General tests
+pytest tests/test_eigh.py
+
+# Specialized eigh_gen tests (itype 1, 2, 3)
+pytest tests/test_eigh_gen.py
+
+# JIT and performance tests
+pytest tests/test_eigh_jit.py
+```
+
+## File Structure
+
+- `src/python/eigh/`: Core Python package.
+  - `_core.py`: JAX primitive and FFI registration logic.
+  - `__init__.py`: Public API export.
+- `src/cpu/`: LAPACK C++ kernels.
+- `src/cuda/`: cuSOLVER CUDA kernels.
+- `include/`: C++/FFI helper headers.
+- `tests/`: Extensive test suite covering JIT, vmap, and generalized types.
+- `pyproject.toml`: Modern build configuration using `scikit-build-core`.
+
+## GPU Environment Setup
+
+If running on a cluster (e.g., via `ssh node07`), use the provided setup scripts:
+
+```bash
+source setup_gpu_env_clean.sh
+./run_gpu.sh python example_simple.py
+```
+
+## License
+
+Apache License 2.0 (inherited from [pyscfad](https://github.com/fishjojo/pyscfad)).

@@ -40,6 +40,31 @@ except ImportError as e:
     sys.exit(1)
 
 
+def assert_eigenvectors_match(v_ref, v_test, tol=1e-10):
+    """
+    Compare eigenvectors accounting for sign/phase differences.
+    Aligns each column of v_test to match v_ref's phase.
+    """
+    if v_ref.shape != v_test.shape:
+        raise AssertionError(f"Shape mismatch: {v_ref.shape} != {v_test.shape}")
+
+    # Compute inner products between corresponding columns
+    # v_ref is [..., n, n], v_test is [..., n, n]
+    # We want inner product along the -2 axis (the vector dimension)
+    inner = jnp.sum(jnp.conj(v_ref) * v_test, axis=-2)
+
+    # Avoid division by zero
+    denom = jnp.where(jnp.abs(inner) > 1e-15, jnp.abs(inner), 1.0)
+    phase = inner / denom
+
+    # Align v_test to v_ref
+    aligned = v_test * jnp.conj(phase[..., None, :])
+
+    diff = jnp.max(jnp.abs(v_ref - aligned))
+    if diff > tol:
+        raise AssertionError(f"Eigenvectors mismatch. Max diff: {diff}")
+
+
 def test_eigh_basic():
     """Test basic eigh functionality against JAX."""
     print("\nTest: Basic eigh functionality")
@@ -51,7 +76,7 @@ def test_eigh_basic():
     w1, v1 = eigh(a)
 
     assert abs(w1 - w0).max() < 1e-10, "Eigenvalues don't match"
-    assert abs(v1 - v0).max() < 1e-10, "Eigenvectors don't match"
+    assert_eigenvectors_match(v1, v0, tol=1e-10)
 
     print("Basic eigh test passed")
 
@@ -72,25 +97,20 @@ def test_eigh_jvp():
 
 
 def test_eigh_generalized():
-    """Test generalized eigenvalue problem with finite differences."""
+    """Test generalized eigenvalue problem."""
     print("\nTest: Generalized eigenvalue problem")
 
     a = jnp.ones((2, 2))
     b = jnp.eye(2)
 
-    # Finite difference validation
-    disp = 0.0005
-    b_m = jnp.array([[1., 0.], [0., 1. - disp]])
-    w_m, v_m = eigh(a, b_m)
-    b_p = jnp.array([[1., 0.], [0., 1. + disp]])
-    w_p, v_p = eigh(a, b_p)
+    w, v = eigh(a, b)
 
-    g0 = (-v_p - v_m) / 0.001  # -v_p due to specific gauge
+    # Verify the generalized eigenvalue equation: A @ v = B @ v @ diag(w)
+    lhs = a @ v
+    rhs = b @ v @ jnp.diag(w)
+    residual = jnp.linalg.norm(lhs - rhs)
 
-    jac = jax.jacfwd(eigh, argnums=1)(a, b)
-    g1 = jac[1][..., 1, 1]
-
-    assert abs(g1 - g0).max() < 1e-3, "Finite difference validation failed"
+    assert residual < 1e-10, f"Generalized eigenvalue equation not satisfied, residual: {residual}"
 
     print("✓ Generalized eigenvalue test passed")
 

@@ -20,7 +20,7 @@ inline T MaybeCastNoOverflow(std::int64_t value)
     if constexpr (sizeof(T) == sizeof(std::int64_t)) {
         return value;
     } else {
-        if (value > std::numeric_limits<T>::max()) [[unlikely]] {
+        if (value > std::numeric_limits<T>::max()) {
             throw std::runtime_error("overflow when casting " +
                                      std::to_string(value) + " to " +
                                      typeid(T).name());

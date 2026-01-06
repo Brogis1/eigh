@@ -48,19 +48,30 @@ from jax._src.numpy import ufuncs
 from jax._src.numpy.util import promote_dtypes_inexact
 
 # Import the compiled C++ extensions
+# Try relative import first (installed package), then absolute (development)
 try:
-    from eigh_lapack import initialize as lapack_initialize, registrations as lapack_registrations
+    from eigh.eigh_lapack import (initialize as lapack_initialize,
+                                  registrations as lapack_registrations)
     _lapack_available = True
 except ImportError:
-    _lapack_available = False
-    warnings.warn("LAPACK backend not available. CPU execution will fail.")
+    try:
+        from eigh_lapack import (initialize as lapack_initialize,
+                                 registrations as lapack_registrations)
+        _lapack_available = True
+    except ImportError:
+        _lapack_available = False
+        warnings.warn("LAPACK backend not available. CPU execution will fail.")
 
 try:
-    from eigh_cuda import registrations as cuda_registrations
+    from eigh.eigh_cuda import registrations as cuda_registrations
     _cuda_available = True
 except ImportError:
-    _cuda_available = False
-    warnings.warn("CUDA backend not available. GPU execution will fail.")
+    try:
+        from eigh_cuda import registrations as cuda_registrations
+        _cuda_available = True
+    except ImportError:
+        _cuda_available = False
+        warnings.warn("CUDA backend not available. GPU execution will fail.")
 
 
 # Register FFI targets
@@ -78,7 +89,7 @@ if _cuda_available:
         ffi.register_ffi_target(
             _name,
             _value,
-            platform="cuda",
+            platform="gpu",
             api_version=1,
         )
 
@@ -388,7 +399,7 @@ if _cuda_available:
     mlir.register_lowering(
         eigh_gen_p,
         partial(_eigh_gen_cpu_gpu_lowering, target_name_prefix="cuda"),
-        platform="cuda"
+        platform="gpu"
     )
 
 

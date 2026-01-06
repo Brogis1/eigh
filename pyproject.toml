@@ -1,0 +1,66 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.8",
+    "nanobind>=1.0.0",
+    "jaxlib>=0.4.0",
+    "numpy>=1.20.0",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "eigh"
+version = "0.1.0"
+description = "Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Xing Zhang", email = "fishjojo@gmail.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+keywords = ["jax", "eigenvalue", "linear-algebra", "gpu", "cuda", "autodiff"]
+dependencies = [
+    "jax>=0.4.0",
+    "jaxlib>=0.4.0",
+    "numpy>=1.20.0",
+]
+
+[project.optional-dependencies]
+cuda = ["jax[cuda12]>=0.4.0"]
+cuda-local = ["jax[cuda12-local]>=0.4.0"]
+test = ["pytest>=7.0.0", "scipy>=1.7.0"]
+dev = ["pytest>=7.0.0", "scipy>=1.7.0"]
+
+[project.urls]
+Homepage = "https://github.com/fishjojo/pyscfad"
+Repository = "https://github.com/fishjojo/pyscfad"
+
+[tool.scikit-build]
+cmake.version = ">=3.18"
+cmake.build-type = "Release"
+build-dir = "build/{wheel_tag}"
+
+# Specify the wheel package locations
+wheel.packages = ["src/python/eigh"]
+
+# Use stable ABI for broader Python compatibility
+wheel.py-api = ""
+
+[tool.scikit-build.cmake.define]
+CMAKE_BUILD_TYPE = "Release"
+# Force GCC for C++ compilation (NVHPC has compatibility issues with nanobind)
+CMAKE_CXX_COMPILER = "/usr/bin/g++"
+CMAKE_C_COMPILER = "/usr/bin/gcc"

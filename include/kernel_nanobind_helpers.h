@@ -1,7 +1,6 @@
 #ifndef EIGH_KERNEL_NANOBIND_HELPERS_H_
 #define EIGH_KERNEL_NANOBIND_HELPERS_H_
 
-#include <bit>
 #include <type_traits>
 #include <nanobind/nanobind.h>
 #include "xla/ffi/api/c_api.h"

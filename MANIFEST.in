@@ -1,0 +1,13 @@
+# Include source files for building
+recursive-include include *.h
+recursive-include src/cpu *.cc *.h
+recursive-include src/cuda *.cc *.h
+include CMakeLists.txt
+include README.md
+include requirements.txt
+
+# Exclude build artifacts
+global-exclude *.so
+global-exclude *.dylib
+global-exclude __pycache__
+global-exclude *.pyc
