@@ -1,5 +1,7 @@
 # Differentiable Eigenvalue Decomposition (eigh)
 
+![alt text](img/eig.png)
+
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
 
 ## Features
