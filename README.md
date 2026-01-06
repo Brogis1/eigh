@@ -1,4 +1,4 @@
-# Differentiable Generalized Eigenvalue Decomposition (eigh)
+# Differentiable Generalized Eigenvalue Decomposition
 
 <img src="img/eig.png" alt="Eigh Logo" width="400">
 
