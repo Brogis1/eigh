@@ -1,0 +1,11 @@
+# Python dependencies for eigh_standalone
+
+# Core dependencies
+jax>=0.4.0
+jaxlib>=0.4.0
+numpy>=1.20.0
+nanobind>=1.0.0
+
+# Optional for testing
+pytest>=7.0.0
+scipy>=1.7.0
