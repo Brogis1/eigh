@@ -31,17 +31,17 @@ void GetLapackKernelsFromBLAS() {
 nb::dict Registrations() {
     nb::dict dict;
 
-    dict["lapack_ssygvd"] = EncapsulateFunction(RealSygvd<float>::Kernel);
-    dict["lapack_dsygvd"] = EncapsulateFunction(RealSygvd<double>::Kernel);
-    dict["lapack_chegvd"] =
+    dict["eigh_lapack_ssygvd"] = EncapsulateFunction(RealSygvd<float>::Kernel);
+    dict["eigh_lapack_dsygvd"] = EncapsulateFunction(RealSygvd<double>::Kernel);
+    dict["eigh_lapack_chegvd"] =
         EncapsulateFunction(ComplexHegvd<std::complex<float>>::Kernel);
-    dict["lapack_zhegvd"] =
+    dict["eigh_lapack_zhegvd"] =
         EncapsulateFunction(ComplexHegvd<std::complex<double>>::Kernel);
 
-    dict["lapack_ssygvd_ffi"] = EncapsulateFunction(lapack_ssygvd_ffi);
-    dict["lapack_dsygvd_ffi"] = EncapsulateFunction(lapack_dsygvd_ffi);
-    dict["lapack_chegvd_ffi"] = EncapsulateFunction(lapack_chegvd_ffi);
-    dict["lapack_zhegvd_ffi"] = EncapsulateFunction(lapack_zhegvd_ffi);
+    dict["eigh_lapack_ssygvd_ffi"] = EncapsulateFunction(lapack_ssygvd_ffi);
+    dict["eigh_lapack_dsygvd_ffi"] = EncapsulateFunction(lapack_dsygvd_ffi);
+    dict["eigh_lapack_chegvd_ffi"] = EncapsulateFunction(lapack_chegvd_ffi);
+    dict["eigh_lapack_zhegvd_ffi"] = EncapsulateFunction(lapack_zhegvd_ffi);
     return dict;
 }
 

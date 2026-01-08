@@ -9,7 +9,7 @@ namespace nb = nanobind;
 nb::dict Registrations() {
     nb::dict dict;
 
-    dict["cusolver_sygvd_ffi"] = EncapsulateFfiHandler(SygvdFfi);
+    dict["eigh_cusolver_sygvd_ffi"] = EncapsulateFfiHandler(SygvdFfi);
     return dict;
 }
 

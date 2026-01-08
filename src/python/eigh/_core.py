@@ -109,7 +109,7 @@ def prepare_lapack_call(fn_base, dtype):
     try:
         prefix = (LAPACK_DTYPE_PREFIX.get(dtype, None) or
                   LAPACK_DTYPE_PREFIX[dtype.type])
-        return f"lapack_{prefix}{fn_base}"
+        return f"eigh_lapack_{prefix}{fn_base}"
     except KeyError:
         raise NotImplementedError(f"Unsupported dtype {dtype}")
 
@@ -297,7 +297,7 @@ def _eigh_gen_cpu_gpu_lowering(
             "uplo": np.uint8(ord("L" if lower else "U")),
         }
     elif target_name_prefix == "cuda":
-        target_name = "cusolver_sygvd_ffi"
+        target_name = "eigh_cusolver_sygvd_ffi"
         kwargs = {
             "itype": np.int32(itype),
             "lower": lower,
