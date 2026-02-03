@@ -26,8 +26,8 @@ jobs:
           CIBW_ARCHS_LINUX: x86_64
           # Use manylinux_2_28 (AlmaLinux 8) - CentOS 7 repos are dead
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
-          # Skip musllinux builds (Alpine) - complex dependency issues
-          CIBW_SKIP: "*-musllinux_*"
+          # Skip: PyPy (pp*), Python 3.8/3.9 (jaxlib compat), musllinux (Alpine)
+          CIBW_SKIP: "pp* cp38-* cp39-* *-musllinux_*"
 
       - uses: actions/upload-artifact@v4
         with:
