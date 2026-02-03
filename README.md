@@ -65,4 +65,26 @@ Apache License 2.0. If used in research, please cite:
   url = {https://github.com/fishjojo/pyscfad},
   year = {2021-2025}
 }
+
+@software{sokolov2026eigh,
+  title={Eigh: Differentiable eigenvalue decomposition with jax (cpu/gpu)},
+  author={Sokolov, Igor},
+  url={https://github.com/Brogis1/eigh},
+  year={2026}
+}
+
+@article{sokolov2026xc,
+  title = {Quantum-enhanced neural exchange-correlation functionals},
+  author = {Sokolov, Igor O. and Both, Gert-Jan and Bochevarov, Art D. and Dub, Pavel A. and Levine, Daniel S. and Brown, Christopher T. and Acheche, Shaheen and Barkoutsos, Panagiotis Kl. and Elfving, Vincent E.},
+  journal = {Phys. Rev. A},
+  volume = {113},
+  issue = {1},
+  pages = {012427},
+  numpages = {24},
+  year = {2026},
+  month = {Jan},
+  publisher = {American Physical Society},
+  doi = {10.1103/m51l-fys2},
+  url = {https://link.aps.org/doi/10.1103/m51l-fys2}
+}
 ```

@@ -15,7 +15,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
-    {name = "Xing Zhang", email = "fishjojo@gmail.com"}
+    {name = "Igor Sokolov"},
+]
+maintainers = [
+    {name = "Igor Sokolov"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -44,8 +47,9 @@ test = ["pytest>=7.0.0", "scipy>=1.7.0"]
 dev = ["pytest>=7.0.0", "scipy>=1.7.0"]
 
 [project.urls]
-Homepage = "https://github.com/fishjojo/pyscfad"
-Repository = "https://github.com/fishjojo/pyscfad"
+Homepage = "https://github.com/Brogis1/eigh"
+Repository = "https://github.com/Brogis1/eigh"
+"Original Project" = "https://github.com/fishjojo/pyscfad"
 
 [tool.scikit-build]
 cmake.version = ">=3.18"
