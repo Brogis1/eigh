@@ -5,6 +5,7 @@ recursive-include src/cuda *.cc *.h
 include CMakeLists.txt
 include README.md
 include requirements.txt
+recursive-include img *
 
 # Exclude build artifacts
 global-exclude *.so
