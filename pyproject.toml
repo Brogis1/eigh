@@ -12,7 +12,7 @@ name = "eigh"
 version = "0.1.0"
 description = "Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [
     {name = "Xing Zhang", email = "fishjojo@gmail.com"}
@@ -23,7 +23,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -63,8 +62,8 @@ wheel.py-api = ""
 
 [tool.cibuildwheel]
 build-verbosity = 1
-# Skip PyPy for now as it often complicates scientific builds
-skip = "pp*"
+# Skip PyPy and Python 3.8 (jaxlib dropped 3.8 support)
+skip = "pp* cp38-*"
 
 [tool.cibuildwheel.linux]
 # Install BLAS/LAPACK on the build container
