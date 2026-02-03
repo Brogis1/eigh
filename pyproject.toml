@@ -60,7 +60,16 @@ wheel.packages = ["src/python/eigh"]
 wheel.py-api = ""
 
 [tool.scikit-build.cmake.define]
-CMAKE_BUILD_TYPE = "Release"
-# Force GCC for C++ compilation (NVHPC has compatibility issues with nanobind)
-CMAKE_CXX_COMPILER = "/usr/bin/g++"
-CMAKE_C_COMPILER = "/usr/bin/gcc"
+
+[tool.cibuildwheel]
+build-verbosity = 1
+# Skip PyPy for now as it often complicates scientific builds
+skip = "pp*"
+
+[tool.cibuildwheel.linux]
+# Install BLAS/LAPACK on the build container
+before-all = "yum install -y openblas-devel lapack-devel || apk add openblas-dev lapack-dev || apt-get install -y libopenblas-dev liblapack-dev"
+
+[tool.cibuildwheel.macos]
+# macOS usually finds Accelerate, but we explicitly set deployment target
+environment = { MACOSX_DEPLOYMENT_TARGET = "10.15" }
