@@ -68,7 +68,7 @@ skip = "pp*"
 
 [tool.cibuildwheel.linux]
 # Install BLAS/LAPACK on the build container
-before-all = "sh scripts/install_build_deps.sh"
+before-all = "bash {project}/scripts/install_build_deps.sh"
 
 [tool.cibuildwheel.macos]
 # macOS usually finds Accelerate, but we explicitly set deployment target
