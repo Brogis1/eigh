@@ -62,8 +62,8 @@ wheel.py-api = ""
 
 [tool.cibuildwheel]
 build-verbosity = 1
-# Skip PyPy and Python 3.8 (jaxlib dropped 3.8 support)
-skip = "pp* cp38-*"
+# Skip PyPy, Python 3.8/3.9 (jaxlib compatibility), and musllinux (Alpine)
+skip = "pp* cp38-* cp39-* *-musllinux_*"
 
 [tool.cibuildwheel.linux]
 # Install BLAS/LAPACK on the build container
