@@ -12,7 +12,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "NVHPC|PGI")
 endif()
 
 # Find required packages
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
+# Use Development.Module instead of Development - manylinux containers
+# don't have full Python development files (libpython), but extension
+# modules don't need them anyway
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 
 # Find nanobind
 execute_process(
