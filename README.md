@@ -4,6 +4,8 @@
 
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
 
+A few wheels are available: https://pypi.org/project/eigh/
+
 ## Features
 - **Generalized Problems**: `A @ V = B @ V @ diag(W)`, etc.
 - **JAX Integrated**: Full support for `jit`, `vmap`, `grad`, and `jvp`.
