@@ -142,7 +142,6 @@ Apache License 2.0. If used in research, please cite:
     url = {https://doi.org/10.1063/5.0118200},
 }
 
-
 @article{sokolov2026xc,
   title = {Quantum-enhanced neural exchange-correlation functionals},
   author = {Sokolov, Igor O. and Both, Gert-Jan and Bochevarov, Art D. and Dub, Pavel A. and Levine, Daniel S. and Brown, Christopher T. and Acheche, Shaheen and Barkoutsos, Panagiotis Kl. and Elfving, Vincent E.},
