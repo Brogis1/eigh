@@ -113,6 +113,14 @@ The remaining solvers below are kept for benchmarking and for reproducing prior 
 ## License & Citation
 Apache License 2.0. If used in research, please cite:
 ```bibtex
+
+@software{sokolov2026eigh,
+  author={Sokolov, Igor},
+  title={Eigh: Differentiable eigenvalue decomposition with jax (cpu/gpu)},
+  url={https://github.com/Brogis1/eigh},
+  year={2026}
+}
+
 @software{pyscfad,
   author = {Zhang, Xing},
   title = {PySCFad: Automatic Differentiation for PySCF},
@@ -120,12 +128,20 @@ Apache License 2.0. If used in research, please cite:
   year = {2021-2025}
 }
 
-@software{sokolov2026eigh,
-  title={Eigh: Differentiable eigenvalue decomposition with jax (cpu/gpu)},
-  author={Sokolov, Igor},
-  url={https://github.com/Brogis1/eigh},
-  year={2026}
+@article{10.1063/5.0118200,
+    author = {Zhang, Xing and Chan, Garnet Kin-Lic},
+    title = {Differentiable quantum chemistry with PySCF for molecules and materials at the mean-field level and beyond},
+    journal = {The Journal of Chemical Physics},
+    volume = {157},
+    number = {20},
+    pages = {204801},
+    year = {2022},
+    month = {11},
+    issn = {0021-9606},
+    doi = {10.1063/5.0118200},
+    url = {https://doi.org/10.1063/5.0118200},
 }
+
 
 @article{sokolov2026xc,
   title = {Quantum-enhanced neural exchange-correlation functionals},
