@@ -66,7 +66,7 @@ A collection of differentiable generalized eigensolvers with different strategie
 
 | Solver | File | Strategy | Gradient-safe at degeneracies |
 |---|---|---|---|
-| **`stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** ⭐ | [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py) | Wraps `eigh`/`eigh_gen` (LAPACK/cuSOLVER) with Lorentzian-broadened VJP [2] | **Yes — recommended** |
+| **`stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** | [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py) | Wraps `eigh`/`eigh_gen` (LAPACK/cuSOLVER) with Lorentzian-broadened VJP [2] | **Yes — recommended** |
 | `standard_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | `scipy.linalg.eigh` (CPU, non-diff) | N/A |
 | `jax_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Plain Cholesky + `jnp.linalg.eigh` | No |
 | `generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetrized Cholesky with SPD shift | No (standard VJP) |
@@ -76,7 +76,7 @@ A collection of differentiable generalized eigensolvers with different strategie
 | `subspace_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetry-breaking perturbation + `subspace_eigh` [2,4] | Yes |
 | `stable_eigh` / `stable_generalized_eigh` | [generalized_eigensolver_stable.py](src/jax/generalized_eigensolver_stable.py) | Pure-JAX Cholesky + Lorentzian-broadened VJP [2] | Yes |
 
-### References (verified)
+### References
 - [1] Kasim, M. F., & Vinko, S. M. *Learning the exchange–correlation functional from nature with fully differentiable density functional theory.* Phys. Rev. Lett. **127**, 126403 (2021). https://doi.org/10.1103/PhysRevLett.127.126403
 - [2] Colburn, S., & Majumdar, A. *Inverse design and flexible parameterization of meta-optics using algorithmic differentiation.* Communications Physics **4**, 54 (2021). https://doi.org/10.1038/s42005-021-00568-6
 - [3] JAX Issue #2748 — Differentiable `eigh` with degeneracies. https://github.com/jax-ml/jax/issues/2748
