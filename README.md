@@ -8,6 +8,8 @@ Standalone implementation of differentiable eigenvalue decomposition with CPU (L
 
 Wheels on PyPI: https://pypi.org/project/eigh/ — Linux (manylinux_2_28, x86_64) and macOS (x86_64, arm64), Python 3.10–3.12. GPU path (cuSOLVER) is tested locally; CI runs CPU tests only.
 
+**Windows:** no prebuilt wheel. The pure-JAX solvers in [src/jax/](src/jax/) (e.g. `safe_generalized_eigh`, `subspace_generalized_eigh`, `stable_generalized_eigh`) work out-of-the-box — `pip install jax numpy scipy` and import directly from that module. The fast LAPACK/cuSOLVER-backed `eigh` / `eigh_gen` kernels (and therefore `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`) require building from source against a local BLAS/LAPACK.
+
 ## Features
 - **Generalized Problems**: `A @ V = B @ V @ diag(W)`, etc.
 - **JAX Integrated**: Full support for `jit`, `vmap`, `grad`, and `jvp`.
@@ -46,12 +48,6 @@ Forward/backward scaling vs. matrix size, and gradient stability as eigenvalues 
   <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/benchmarks/suite/figs/scaling_grad.png" alt="Backward-pass (gradient) scaling" width="45%">
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/benchmarks/suite/figs/grad_gap_norm.png" alt="Gradient norm vs. eigenvalue gap" width="45%">
-  <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/benchmarks/suite/figs/grad_gap_nan.png" alt="Gradient NaN rate vs. eigenvalue gap" width="45%">
-</p>
-
-The stable solvers (⭐ below) keep gradients finite and bounded as the eigenvalue gap shrinks, where plain `jnp.linalg.eigh` gradients blow up or NaN.
 
 
 ## API Reference
