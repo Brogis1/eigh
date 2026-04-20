@@ -1,0 +1,974 @@
+[
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 3.410605131648481e-13,
+    "subspace_err": 4.470348358154298e-08,
+    "residual": 2.7794397187028764e-14
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 7.389644451905042e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.334101133670654e-14
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 7.389644451905042e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.334101133670654e-14
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 4.6818195187370293e-07,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 4.194802437074806e-09
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 3.410605131648481e-13,
+    "subspace_err": 4.470348358154298e-08,
+    "residual": 2.7794397187028764e-14
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 0,
+    "eval_err": 1.1937117960769683e-12,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 2.331724382382232e-14
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 5.115907697472721e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.886662846232712e-14
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 4.547473508864641e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.3399658455739477e-14
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 4.547473508864641e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.3399658455739477e-14
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 4.374856530375837e-07,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 4.205981650774589e-09
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 5.115907697472721e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.886662846232712e-14
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 1,
+    "eval_err": 5.684341886080801e-13,
+    "subspace_err": 2.980232238769532e-08,
+    "residual": 2.360358367964534e-14
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 5.115907697472721e-13,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 2.898016863323487e-14
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 3.979039320256561e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.415557342922415e-14
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 3.979039320256561e-13,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 2.415557342922415e-14
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 4.825456016988028e-07,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 4.241718096614822e-09
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 5.115907697472721e-13,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 2.898016863323487e-14
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100.0,
+    "seed": 2,
+    "eval_err": 4.547473508864641e-13,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 2.365081952970701e-14
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 1.331500243395567e-09,
+    "subspace_err": 5.1619136559035714e-08,
+    "residual": 1.1741587139877823e-11
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 1.3387762010097504e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 6.165784889745744e-12
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 1.3387762010097504e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 6.165784889745744e-12
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 5.312240682542324e-05,
+    "subspace_err": 4.470348358154298e-08,
+    "residual": 3.0077549514993105e-08
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 1.331500243395567e-09,
+    "subspace_err": 5.1619136559035714e-08,
+    "residual": 1.1741587139877823e-11
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 0,
+    "eval_err": 1.342414179816842e-09,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 6.477100854015869e-12
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 2.168235369026661e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 1.1982841121084923e-11
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 2.2264430299401283e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 6.268944078702007e-12
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 2.2264430299401283e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 6.268944078702007e-12
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 4.0602371882414445e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 2.996499875286725e-08
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 2.168235369026661e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 1.1982841121084923e-11
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 1,
+    "eval_err": 2.219167072325945e-09,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 6.342453683634718e-12
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 1.9572325982153416e-09,
+    "subspace_err": 6.322027276634108e-08,
+    "residual": 1.0034054773477051e-11
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 1.964508555829525e-09,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 6.489933685544053e-12
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 1.964508555829525e-09,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 6.489933685544053e-12
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 4.245086165610701e-05,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 3.0401435997499905e-08
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 1.9572325982153416e-09,
+    "subspace_err": 6.322027276634108e-08,
+    "residual": 1.0034054773477051e-11
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000.0,
+    "seed": 2,
+    "eval_err": 1.964508555829525e-09,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 6.366221875256118e-12
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 1.1006835848093033e-05,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 1.001468134953042e-08
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 1.1008232831954956e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.81661397839075e-09
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 1.1008232831954956e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.81661397839075e-09
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 0.0054715462028980255,
+    "subspace_err": 4.470348358154298e-08,
+    "residual": 2.47847259473428e-07
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 1.1006835848093033e-05,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 1.001468134953042e-08
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 0,
+    "eval_err": 1.1011958122253418e-05,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.5513143722512585e-09
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 1.6565900295972824e-05,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 1.1679394314183163e-08
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 1.6565900295972824e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.5199138744098175e-09
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 1.6565900295972824e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.5199138744098175e-09
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 0.004093884956091642,
+    "subspace_err": 5.1619136559035714e-08,
+    "residual": 2.457627017453899e-07
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 1.6565900295972824e-05,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 1.1679394314183163e-08
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 1,
+    "eval_err": 1.656496897339821e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.38344655755405e-09
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 1.1343508958816528e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 8.456759499038141e-09
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 1.134723424911499e-05,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.4391783597988543e-09
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 1.134723424911499e-05,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.4391783597988543e-09
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 0.0037517547607421875,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 2.505472994043743e-07
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 1.1343508958816528e-05,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 8.456759499038141e-09
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000.0,
+    "seed": 2,
+    "eval_err": 1.1346768587827682e-05,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.4747682800107936e-09
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.18368172645568848,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.873363717441915e-06
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.1836814284324646,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 2.493769919042296e-06
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.1836814284324646,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 2.493769919042296e-06
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.3918565511703491,
+    "subspace_err": 5.575503985246931e-08,
+    "residual": 3.186259703108519e-06
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.18368172645568848,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.873363717441915e-06
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 0,
+    "eval_err": 0.18368148803710938,
+    "subspace_err": 5.372690074837194e-08,
+    "residual": 2.4711040886631035e-06
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.044221535325050354,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.437910391209883e-06
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.044221729040145874,
+    "subspace_err": 5.1619136559035714e-08,
+    "residual": 2.1825237968539674e-06
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.044221729040145874,
+    "subspace_err": 5.1619136559035714e-08,
+    "residual": 2.1825237968539674e-06
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.40757206082344055,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.0598556009764346e-06
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.044221535325050354,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.437910391209883e-06
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 1,
+    "eval_err": 0.044221460819244385,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 2.3564874663373333e-06
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.11066702008247375,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.05990849819446e-06
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.11066710948944092,
+    "subspace_err": 5.372690074837194e-08,
+    "residual": 2.623628109671975e-06
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.11066710948944092,
+    "subspace_err": 5.372690074837194e-08,
+    "residual": 2.623628109671975e-06
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.42673155665397644,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 3.2543115834808937e-06
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.11066702008247375,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 8.05990849819446e-06
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 100000000.0,
+    "seed": 2,
+    "eval_err": 0.1106669008731842,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 2.3427563845151155e-06
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1043.380786895752,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 0.005503054777147421
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1043.380844116211,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 0.0019145032946103575
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1043.380844116211,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 0.0019145032946103575
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1096.2698249816895,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 0.0020232865249797042
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1043.380786895752,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 0.005503054777147421
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 0,
+    "eval_err": 1043.3808517456055,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.0018759397427601018
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 808.3690223693848,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.0054012241433083665
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 808.3690032958984,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.0016589412747212114
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 808.3690032958984,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.0016589412747212114
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 851.2122955322266,
+    "subspace_err": 4.712160915387244e-08,
+    "residual": 0.0017960426919553657
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 808.3690223693848,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.0054012241433083665
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 1,
+    "eval_err": 808.369010925293,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 0.0017709356431309655
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 588.363790512085,
+    "subspace_err": 4.942156062059702e-08,
+    "residual": 0.006274000987796918
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 588.3637638092041,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.001741128679700768
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 588.3637638092041,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 0.001741128679700768
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 551.6719818115234,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 0.001693142020043981
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 588.363790512085,
+    "subspace_err": 4.942156062059702e-08,
+    "residual": 0.006274000987796918
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 10000000000.0,
+    "seed": 2,
+    "eval_err": 588.3637561798096,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 0.0017312677272764549
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1864914.7749023438,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.635593999623345
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1864914.7749023438,
+    "subspace_err": 6.322027276634108e-08,
+    "residual": 1.3113944427404052
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1864914.7749023438,
+    "subspace_err": 6.322027276634108e-08,
+    "residual": 1.3113944427404052
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1861114.3078613281,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 1.5396025585740323
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1864914.7749023438,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 3.635593999623345
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 0,
+    "eval_err": 1864914.7775878906,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 1.2803560987991942
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 5800932.179443359,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 4.266145109239727
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 9480614.699707031,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 1.4678327280709385
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 9480614.699707031,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 1.4678327280709385
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 9484960.573730469,
+    "subspace_err": 4.214684851089405e-08,
+    "residual": 1.1949720117718243
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 5800932.179443359,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 4.266145109239727
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 1,
+    "eval_err": 5800932.175048828,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 1.359835671852016
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2594366.037841797,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 4.102411352034847
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2594366.0329589844,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 1.2985742981284523
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2594366.0329589844,
+    "subspace_err": 3.942476676500725e-08,
+    "residual": 1.2985742981284523
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2597698.927734375,
+    "subspace_err": 4.942156062059702e-08,
+    "residual": 1.300416850658731
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2594366.037841797,
+    "subspace_err": 3.6500241499888574e-08,
+    "residual": 4.102411352034847
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "cond_B": 1000000000000.0,
+    "seed": 2,
+    "eval_err": 2594366.0297851562,
+    "subspace_err": 3.332000937312529e-08,
+    "residual": 1.4182161558771342
+  }
+]

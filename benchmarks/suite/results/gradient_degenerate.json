@@ -1,0 +1,1262 @@
+[
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 7.706697692395088,
+    "grad_max": 0.352351730609384,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 7.706697692395108,
+    "grad_max": 0.35235173060938973,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 54.18165112962638,
+    "grad_max": 2.0265079777892905,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 7.706697692395112,
+    "grad_max": 0.35235173060938746,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 0,
+    "grad_norm": 74526.23858928795,
+    "grad_max": 2697.272491552333,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 5.8840550226835004,
+    "grad_max": 0.49576822987592273,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 5.884055022683455,
+    "grad_max": 0.49576822987592284,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 64.05036689197546,
+    "grad_max": 2.3835706858348416,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 5.884055022683505,
+    "grad_max": 0.4957682298759217,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 1,
+    "grad_norm": 353946.0450854435,
+    "grad_max": 12567.016112177029,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 6.140595375256905,
+    "grad_max": 0.3355003054917966,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 6.140595375256899,
+    "grad_max": 0.335500305491796,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 43.05991306825148,
+    "grad_max": 1.6629482482287459,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 6.140595375256904,
+    "grad_max": 0.335500305491796,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.01,
+    "seed": 2,
+    "grad_norm": 102505.80065988684,
+    "grad_max": 4195.8323458005625,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 9.095229824148376,
+    "grad_max": 0.3629783343631779,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 9.095229824148394,
+    "grad_max": 0.36297833436317817,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 70.23599121774932,
+    "grad_max": 3.042281263216052,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 9.09522982414837,
+    "grad_max": 0.3629783343631759,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 0,
+    "grad_norm": 55415.98942321905,
+    "grad_max": 2136.0233692427446,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 7.963359841251745,
+    "grad_max": 0.3943151789720634,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 7.963359841251748,
+    "grad_max": 0.3943151789720639,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 136.53351148597164,
+    "grad_max": 5.238779572168261,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 7.963359841251731,
+    "grad_max": 0.3943151789720628,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 1,
+    "grad_norm": 219970.86317181916,
+    "grad_max": 11067.63667891862,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 5.234168568132886,
+    "grad_max": 0.2741419505790991,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 5.234168568132892,
+    "grad_max": 0.27414195057909896,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 67.63035211951804,
+    "grad_max": 2.2786179065774492,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 5.234168568132897,
+    "grad_max": 0.27414195057909974,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 0.0001,
+    "seed": 2,
+    "grad_norm": 83235.18641722953,
+    "grad_max": 4297.517254355207,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 8.985886834591005,
+    "grad_max": 0.356167815520664,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 8.985886834590987,
+    "grad_max": 0.35616781552066573,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 77.38709030650628,
+    "grad_max": 2.8204050605696454,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 8.985886834590993,
+    "grad_max": 0.3561678155206631,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 0,
+    "grad_norm": 55115.891681865716,
+    "grad_max": 2078.1745995552396,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 8.016203114781021,
+    "grad_max": 0.3963564689329723,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 8.016203114781018,
+    "grad_max": 0.39635646893297327,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 111.81238470877098,
+    "grad_max": 5.416319350949113,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 8.016203114781025,
+    "grad_max": 0.39635646893297327,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 1,
+    "grad_norm": 142560.35613396254,
+    "grad_max": 5832.420359990505,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 5.201429666767992,
+    "grad_max": 0.27428410001757486,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 5.201429666767998,
+    "grad_max": 0.2742841000175743,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 99.25324704322648,
+    "grad_max": 4.1017956315406945,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 5.201429666767996,
+    "grad_max": 0.2742841000175751,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-06,
+    "seed": 2,
+    "grad_norm": 109439.51449130797,
+    "grad_max": 6889.4340775438095,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 8.984812179676213,
+    "grad_max": 0.3560989112317694,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 8.984812179676194,
+    "grad_max": 0.3560989112317683,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 86.08360835749303,
+    "grad_max": 2.8749502375040397,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 8.984812179676236,
+    "grad_max": 0.3560989112317697,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 0,
+    "grad_norm": 55114.48639762783,
+    "grad_max": 2077.572677498161,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 8.016730724873328,
+    "grad_max": 0.39637601755457214,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 8.016730724873327,
+    "grad_max": 0.3963760175545715,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 111.70010583330803,
+    "grad_max": 5.409236839116,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 8.016730724873327,
+    "grad_max": 0.39637601755457375,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 1,
+    "grad_norm": 142862.62887165332,
+    "grad_max": 5843.7763446423405,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 5.201112091605144,
+    "grad_max": 0.2742862226599994,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 5.201112091605141,
+    "grad_max": 0.27428622265999913,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 99.47097669569189,
+    "grad_max": 4.097082301671678,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 5.201112091605134,
+    "grad_max": 0.2742862226599984,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-08,
+    "seed": 2,
+    "grad_norm": 109834.03802668974,
+    "grad_max": 6913.122297340076,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 8.984801434969947,
+    "grad_max": 0.3560982221114234,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 8.984801434969953,
+    "grad_max": 0.3560982221114205,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 86.08356198394114,
+    "grad_max": 2.874959695307835,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 8.984801434969967,
+    "grad_max": 0.3560982221114249,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 0,
+    "grad_norm": 55114.472445045634,
+    "grad_max": 2077.566652753892,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 8.016736000827219,
+    "grad_max": 0.39637621295270303,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 8.016736000827215,
+    "grad_max": 0.3963762129527032,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 111.69897339126513,
+    "grad_max": 5.40916558502357,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 8.016736000827217,
+    "grad_max": 0.3963762129527055,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 1,
+    "grad_norm": 142865.64836627123,
+    "grad_max": 5843.890458588905,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 5.2011089168437685,
+    "grad_max": 0.2742862439583236,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 5.201108916843773,
+    "grad_max": 0.27428624395832335,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 99.47313130163626,
+    "grad_max": 4.097032345441321,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 5.201108916843767,
+    "grad_max": 0.2742862439583226,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-10,
+    "seed": 2,
+    "grad_norm": 109837.95482515286,
+    "grad_max": 6913.355508622776,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 8.984801327523073,
+    "grad_max": 0.35609821522021196,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 8.984801327523073,
+    "grad_max": 0.3560982152202141,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 86.08356152028378,
+    "grad_max": 2.874959789885682,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 8.984801327523073,
+    "grad_max": 0.3560982152202116,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 0,
+    "grad_norm": 55114.47230553068,
+    "grad_max": 2077.5665925059357,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 8.016736053586738,
+    "grad_max": 0.3963762149066753,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 8.016736053586731,
+    "grad_max": 0.39637621490667585,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 111.69896206590533,
+    "grad_max": 5.409164872440327,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 8.016736053586726,
+    "grad_max": 0.39637621490667574,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 1,
+    "grad_norm": 142865.6785607874,
+    "grad_max": 5843.8915997844515,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 5.201108885096253,
+    "grad_max": 0.274286244171314,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 5.201108885096258,
+    "grad_max": 0.27428624417131475,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 99.47315284543185,
+    "grad_max": 4.097031845596285,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 5.201108885096254,
+    "grad_max": 0.2742862441713138,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-12,
+    "seed": 2,
+    "grad_norm": 109837.99399019485,
+    "grad_max": 6913.357840360988,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 8.984801326448611,
+    "grad_max": 0.3560982151512997,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 8.984801326448597,
+    "grad_max": 0.3560982151512998,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 86.08356151564742,
+    "grad_max": 2.874959790831486,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 8.984801326448594,
+    "grad_max": 0.3560982151512973,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 0,
+    "grad_norm": 55114.472304137445,
+    "grad_max": 2077.566591903554,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 8.016736054114343,
+    "grad_max": 0.3963762149262167,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 8.016736054114332,
+    "grad_max": 0.3963762149262158,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 111.69896195264134,
+    "grad_max": 5.409164865314949,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 8.016736054114325,
+    "grad_max": 0.3963762149262144,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 1,
+    "grad_norm": 142865.6788627349,
+    "grad_max": 5843.891611195531,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "jax_eig",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 5.201108884778778,
+    "grad_max": 0.2742862441734437,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "generalized",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 5.201108884778781,
+    "grad_max": 0.27428624417344527,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "safe",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 99.47315306077373,
+    "grad_max": 4.097031840591564,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "subspace",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 0.0,
+    "grad_max": 0.0,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "stable",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 5.201108884778788,
+    "grad_max": 0.2742862441734439,
+    "has_nan": false,
+    "has_inf": false
+  },
+  {
+    "solver": "pyscfad",
+    "n": 128,
+    "gap": 1e-14,
+    "seed": 2,
+    "grad_norm": 109837.99438187513,
+    "grad_max": 6913.357863681264,
+    "has_nan": false,
+    "has_inf": false
+  }
+]
