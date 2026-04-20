@@ -8,9 +8,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  pytest-jax:
-    name: JAX eigensolver tests (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+  pytest-jax-full:
+    name: Full tests (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install BLAS/LAPACK (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev liblapack-dev
+
+      - name: Install BLAS/LAPACK (macOS)
+        if: runner.os == 'macOS'
+        run: echo "macOS Accelerate framework is used; no install needed"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel cmake ninja
+          pip install "jax[cpu]" jaxtyping numpy scipy pytest
+
+      - name: Build and install package
+        run: pip install -e . -v
+
+      - name: Run JAX eigensolver tests
+        run: pytest tests/test_jax_eigensolvers.py -v --tb=short
+
+  pytest-jax-windows:
+    name: JAX solvers (windows-latest, Python ${{ matrix.python-version }})
+    runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
@@ -25,13 +62,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel cmake ninja
-          pip install "jax[cpu]" jaxtyping numpy scipy pytest
+      - name: Install pure-Python test dependencies
+        run: pip install "jax[cpu]" jaxtyping numpy scipy pytest
 
-      - name: Build and install package
-        run: pip install -e .
-
-      - name: Run JAX eigensolver tests
+      - name: Run pure-JAX solver tests (no C++ extension build)
         run: pytest tests/test_jax_eigensolvers.py -v --tb=short

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the following metadata."
+title: "Eigh: Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
+authors:
+  - family-names: Sokolov
+    given-names: Igor O.
+repository-code: "https://github.com/Brogis1/eigh"
+url: "https://github.com/Brogis1/eigh"
+license: Apache-2.0
+version: 0.2.0
+date-released: "2026-04-20"
+keywords:
+  - jax
+  - eigenvalue
+  - linear-algebra
+  - gpu
+  - cuda
+  - autodiff
+  - differentiable-programming
