@@ -1,4 +1,4 @@
-"""JAX-based implementations of generalized eigenvalue solvers for Kohn-Sham DFT.
+"""JAX-based implementations of generalized eigenvalue solvers.
 
 Experimental solvers, we have a collection of them because they strongly influence
 training stability and we can choose the best one eventually.
