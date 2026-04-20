@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Brogis1/eigh/actions/workflows/tests.yml/badge.svg)](https://github.com/Brogis1/eigh/actions/workflows/tests.yml)
 
-<img src="https://raw.githubusercontent.com/Brogis1/eigh/main/img/eig.png" alt="Eigh Logo" width="400">
+<img src="https://raw.githubusercontent.com/Brogis1/eigh/main/img/eig.png?v=2" alt="Eigh Logo" width="400">
 
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
 
@@ -62,19 +62,32 @@ Individual eigenvalue gradients are ill-defined for degenerate (repeated) eigenv
 ## JAX Eigensolvers (`src/jax/`)
 A collection of differentiable generalized eigensolvers with different strategies for handling degenerate eigenvalues in reverse-mode gradients. Useful for training pipelines where degeneracies are common.
 
-**Recommended:** `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad` from [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py). These are the solvers promoted by this package — they wrap the fast LAPACK/cuSOLVER-backed `eigh` / `eigh_gen` kernels with a Lorentzian-broadened custom VJP for stable gradients at (near-)degeneracies. The other solvers below are provided for comparison and experimentation.
+**If you just want a working solver, use `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** from [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py). They wrap the fast LAPACK/cuSOLVER kernels with a Lorentzian-broadened custom VJP, so gradients stay stable when eigenvalues are (nearly) degenerate.
 
-| Solver | File | Strategy | Gradient-safe at degeneracies |
+On Windows, or if you cannot build the C++ kernels, use `stable_generalized_eigh` from [generalized_eigensolver_stable.py](src/jax/generalized_eigensolver_stable.py) instead — same gradient treatment, pure JAX.
+
+The remaining solvers below are kept for benchmarking and for reproducing prior work; they are not recommended as defaults.
+
+#### Recommended
+| Solver | File | Strategy |
+|---|---|---|
+| **`stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** | [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py) | LAPACK/cuSOLVER kernels + Lorentzian-broadened VJP [2] |
+| **`stable_eigh` / `stable_generalized_eigh`** (pure-JAX) | [generalized_eigensolver_stable.py](src/jax/generalized_eigensolver_stable.py) | Pure-JAX Cholesky + Lorentzian-broadened VJP [2] |
+
+#### Alternative stable solvers
+| Solver | File | Strategy | Gradient notes |
 |---|---|---|---|
-| **`stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** | [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py) | Wraps `eigh`/`eigh_gen` (LAPACK/cuSOLVER) with Lorentzian-broadened VJP [2] | **Yes — recommended** |
-| `standard_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | `scipy.linalg.eigh` (CPU, non-diff) | N/A |
-| `jax_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Plain Cholesky + `jnp.linalg.eigh` | No |
-| `generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetrized Cholesky with SPD shift | No (standard VJP) |
-| `degen_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: mask degenerate `F_ij` via thresholding [1,3] | Yes, for symmetric-subspace losses |
-| `safe_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Cholesky + `degen_eigh` | Yes |
-| `subspace_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: Lorentzian broadening `F/(F²+ε²)` [2] | Yes |
-| `subspace_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetry-breaking perturbation + `subspace_eigh` [2,4] | Yes |
-| `stable_eigh` / `stable_generalized_eigh` | [generalized_eigensolver_stable.py](src/jax/generalized_eigensolver_stable.py) | Pure-JAX Cholesky + Lorentzian-broadened VJP [2] | Yes |
+| `subspace_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: Lorentzian broadening `F/(F²+ε²)` [2] | Stable |
+| `subspace_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetry-breaking perturbation + `subspace_eigh` [2,4] | Stable |
+| `degen_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: mask degenerate `F_ij` by threshold [1,3] | Stable only for symmetric-subspace losses |
+| `safe_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Cholesky + `degen_eigh` | Inherits `degen_eigh` caveat |
+
+#### Baselines (not gradient-safe at degeneracies)
+| Solver | File | Strategy |
+|---|---|---|
+| `standard_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | `scipy.linalg.eigh` — non-differentiable reference |
+| `jax_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Plain Cholesky + `jnp.linalg.eigh`, default VJP |
+| `generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetrized Cholesky with SPD shift, default VJP |
 
 ### References
 - [1] Kasim, M. F., & Vinko, S. M. *Learning the exchange–correlation functional from nature with fully differentiable density functional theory.* Phys. Rev. Lett. **127**, 126403 (2021). https://doi.org/10.1103/PhysRevLett.127.126403
