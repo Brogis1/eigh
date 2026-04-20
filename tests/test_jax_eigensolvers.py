@@ -22,20 +22,24 @@ jax.config.update("jax_enable_x64", True)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from importlib.util import find_spec
+
 from src.jax.generalized_eigensolver import (  # noqa: E402
     safe_generalized_eigh,
     subspace_generalized_eigh,
 )
 from src.jax.generalized_eigensolver_stable import stable_generalized_eigh  # noqa: E402
-from src.jax.generalized_eigensolver_pyscfad import stable_eigh_gen_pyscfad  # noqa: E402
 
-
+# The pyscfad solver wraps the compiled LAPACK/cuSOLVER extension; it's only
+# available when `eigh` is installed (i.e. the C++ build succeeded).
 SOLVERS = [
     ("safe", safe_generalized_eigh),
     ("subspace", subspace_generalized_eigh),
     ("stable", stable_generalized_eigh),
-    ("pyscfad", stable_eigh_gen_pyscfad),
 ]
+if find_spec("eigh") is not None:
+    from src.jax.generalized_eigensolver_pyscfad import stable_eigh_gen_pyscfad  # noqa: E402
+    SOLVERS.append(("pyscfad", stable_eigh_gen_pyscfad))
 
 
 def _make_problem(n: int, seed: int = 0):
