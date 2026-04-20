@@ -25,13 +25,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel cmake ninja
           pip install "jax[cpu]" jaxtyping numpy scipy pytest
 
-      - name: Install package (for pyscfad solver)
-        run: pip install -e . || echo "Editable install failed; pyscfad-dependent tests may be skipped"
+      - name: Build and install package
+        run: pip install -e .
 
       - name: Run JAX eigensolver tests
         run: pytest tests/test_jax_eigensolvers.py -v --tb=short

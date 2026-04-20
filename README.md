@@ -1,5 +1,7 @@
 # Differentiable Generalized Eigenvalue Decomposition
 
+[![Tests](https://github.com/Brogis1/eigh/actions/workflows/tests.yml/badge.svg)](https://github.com/Brogis1/eigh/actions/workflows/tests.yml)
+
 <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/img/eig.png" alt="Eigh Logo" width="400">
 
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
@@ -43,6 +45,35 @@ grad = jax.grad(lambda A: eigh(A)[0].sum())(A) # Differentiable
 
 ## Degenerate Eigenvalues & Gradients
 Individual eigenvalue gradients are ill-defined for degenerate (repeated) eigenvalues. However, symmetric functions (like `sum`, `var`, `trace`) have stable gradients. The `deg_thresh` parameter (default `1e-9`) masks divisions by near-zero gaps to maintain stability.
+
+## JAX Eigensolvers (`src/jax/`)
+A collection of differentiable generalized eigensolvers with different strategies for handling degenerate eigenvalues in reverse-mode gradients. Useful for DFT/Kohn–Sham training where degeneracies are common.
+
+| Solver | File | Strategy | Gradient-safe at degeneracies |
+|---|---|---|---|
+| `standard_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | `scipy.linalg.eigh` (CPU, non-diff) | N/A |
+| `jax_eig` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Plain Cholesky + `jnp.linalg.eigh` | No |
+| `generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetrized Cholesky with SPD shift | No (standard VJP) |
+| `degen_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: mask degenerate `F_ij` via thresholding [1,3] | Yes, for symmetric-subspace losses |
+| `safe_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Cholesky + `degen_eigh` | Yes |
+| `subspace_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Custom VJP: Lorentzian broadening `F/(F²+ε²)` [2] | Yes |
+| `subspace_generalized_eigh` | [generalized_eigensolver.py](src/jax/generalized_eigensolver.py) | Symmetry-breaking perturbation + `subspace_eigh` [2,4] | Yes (most robust) |
+| `stable_eigh` / `stable_generalized_eigh` | [generalized_eigensolver_stable.py](src/jax/generalized_eigensolver_stable.py) | Custom VJP: Lorentzian-broadened F-matrix [2] | Yes |
+| `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad` | [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py) | Wraps `eigh`/`eigh_gen` with Lorentzian-broadened VJP [2] | Yes |
+
+### References (verified)
+- [1] Kasim, M. F., & Vinko, S. M. *Learning the exchange–correlation functional from nature with fully differentiable density functional theory.* Phys. Rev. Lett. **127**, 126403 (2021). https://doi.org/10.1103/PhysRevLett.127.126403
+- [2] Colburn, S., & Majumdar, A. *Inverse design and flexible parameterization of meta-optics using algorithmic differentiation.* Communications Physics **4**, 54 (2021). https://doi.org/10.1038/s42005-021-00568-6
+- [3] JAX Issue #2748 — Differentiable `eigh` with degeneracies. https://github.com/jax-ml/jax/issues/2748
+- [4] JAX Issue #5461 — Stable generalized `eigh`. https://github.com/jax-ml/jax/issues/5461
+
+## Benchmarks
+Forward and backward (gradient) scaling vs. matrix size for the JAX eigensolvers in `src/jax/`. See [benchmarks/suite/](benchmarks/suite/) for the scripts.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/benchmarks/suite/figs/scaling_fwd.png" alt="Forward-pass scaling" width="45%">
+  <img src="https://raw.githubusercontent.com/Brogis1/eigh/main/benchmarks/suite/figs/scaling_grad.png" alt="Backward-pass (gradient) scaling" width="45%">
+</p>
 
 ## Development & Testing
 - **Requirements**: CMake 3.18+, C++17, JAX, NumPy, LAPACK/CUDA.
