@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Brogis1/eigh/actions/workflows/tests.yml/badge.svg)](https://github.com/Brogis1/eigh/actions/workflows/tests.yml)
 
-<img src="https://raw.githubusercontent.com/Brogis1/eigh/main/img/eig.png?v=2" alt="Eigh Logo" width="400">
+<img src="https://raw.githubusercontent.com/Brogis1/eigh/main/img/eig.png?v=3" alt="Eigh Logo" width="400">
 
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
 
