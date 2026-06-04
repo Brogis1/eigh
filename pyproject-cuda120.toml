@@ -1,0 +1,104 @@
+# ============================================================================
+# Build configuration for the `eigh-cuda120` PyPI package.
+#
+# Same source tree and same importable `eigh` package as the CPU build; only the
+# distribution differs. This variant is built against the CUDA 12.0 toolkit, so
+# the binary is forward-compatible with CUDA 12.0 AND every newer 12.x runtime
+# (12.0 -> 12.8+). Use this on older CUDA clusters (e.g. CUDA 12.0). It is built
+# on manylinux2014 (glibc 2.17), the widest-reaching Linux baseline.
+#
+# The companion `eigh-cuda128` (pyproject-cuda128.toml) targets CUDA 12.8 on a
+# newer manylinux_2_34 baseline. Both are built by .github/workflows/publish-cuda.yml.
+#
+# Linux x86_64 only: NVIDIA's CUDA wheels and nvcc exist only for that platform.
+# ============================================================================
+
+[build-system]
+requires = [
+    "scikit-build-core>=0.8",
+    "nanobind>=1.0.0",
+    "jaxlib==0.5.*",
+    "numpy>=1.20.0",
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "eigh-cuda120"
+version = "0.3.4"
+description = "Differentiable eigenvalue decomposition with JAX — CUDA 12.0 (GPU) build"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Igor Sokolov"},
+]
+maintainers = [
+    {name = "Igor Sokolov"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Environment :: GPU :: NVIDIA CUDA :: 12",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+keywords = ["jax", "eigenvalue", "linear-algebra", "gpu", "cuda", "autodiff"]
+dependencies = [
+    "jax>=0.5.0",
+    "jaxlib>=0.5.0",
+    "numpy>=1.20.0",
+    # CUDA 12 runtime libraries the compiled eigh_cuda.so links against (directly
+    # or transitively). Shipped as NVIDIA's official pip wheels so this wheel
+    # stays small (~1 MB) instead of bundling hundreds of MB. cusolver pulls in
+    # cublas/cublasLt/cusparse/nvJitLink/nvrtc, so all are listed here AND
+    # excluded from auditwheel bundling in the CUDA workflow.
+    "nvidia-cuda-runtime-cu12",
+    "nvidia-cusolver-cu12",
+    "nvidia-cublas-cu12",
+    "nvidia-cusparse-cu12",
+    "nvidia-cuda-nvrtc-cu12",
+    "nvidia-nvjitlink-cu12",
+    # Pulls a CUDA-12 jaxlib so JAX itself runs on GPU.
+    "jax[cuda12]>=0.5.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0.0", "scipy>=1.7.0"]
+
+[project.urls]
+Homepage = "https://github.com/Brogis1/eigh"
+Repository = "https://github.com/Brogis1/eigh"
+"Original Project" = "https://github.com/fishjojo/pyscfad"
+
+[tool.scikit-build]
+cmake.version = ">=3.18"
+cmake.build-type = "Release"
+build-dir = "build/{wheel_tag}"
+wheel.packages = ["src/python/eigh"]
+wheel.py-api = ""
+
+[tool.scikit-build.cmake.define]
+EIGH_REQUIRE_CUDA = "ON"
+
+[tool.cibuildwheel]
+build-verbosity = 1
+build = "cp310-* cp311-* cp312-*"
+skip = "pp* cp38-* cp39-* *-musllinux_*"
+before-build = "pip install 'jaxlib==0.5.*'"
+config-settings."cmake.define.CMAKE_CUDA_COMPILER" = "/usr/local/cuda/bin/nvcc"
+test-command = "python -c \"from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations'); print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))\""
+
+[[tool.cibuildwheel.overrides]]
+select = "cp312-*"
+inherit.config-settings = "append"
+config-settings."wheel.py-api" = "cp312"
+
+[tool.cibuildwheel.linux]
+before-all = "bash {project}/scripts/install_build_deps.sh"

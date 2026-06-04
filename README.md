@@ -28,34 +28,44 @@ This pulls a prebuilt **CPU-only** wheel (see [Compatibility](#compatibility)).
 `pip install eigh` always prefers the matching wheel, so it will **not** build a
 GPU extension even on a GPU node.
 
-### GPU (prebuilt `eigh-cuda12` wheel)
+### GPU (prebuilt wheels)
 
-For CUDA 12 systems, install the GPU build — a separate package name, **same
-repository and same `import eigh`**:
+GPU builds ship as separate package names (**same repository, same `import
+eigh`**), one per CUDA build target. Pick by your cluster's CUDA version:
 
 ```bash
-pip install eigh-cuda12
+# Older CUDA clusters (CUDA 12.0+). Forward-compatible: also runs on 12.8+.
+# Widest reach (glibc 2.17). This is the right default if unsure.
+pip install eigh-cuda120
+
+# Modern CUDA clusters (CUDA 12.8+). Newer toolkit/glibc (2.34, RHEL 9+).
+pip install eigh-cuda128
 ```
 
-This pulls a Linux x86_64 wheel with the cuSOLVER kernel compiled in, plus the
-NVIDIA CUDA 12 runtime libraries (`nvidia-cusolver-cu12`, …) and a CUDA-12 JAX.
-`import eigh` then auto-detects the GPU backend. CUDA 12 only (see
-[CUDA / GPU](#cuda--gpu)).
+Each pulls a Linux x86_64 wheel with the cuSOLVER kernel compiled in, plus the
+matching NVIDIA CUDA 12 runtime libraries and a CUDA-12 JAX. `import eigh` then
+auto-detects the GPU backend.
 
-> **Why two packages?** A single normal PyPI package cannot serve a small CPU
-> wheel to CPU users *and* a GPU wheel to GPU users (PyPI wheel-variants are not
-> GA). So GPU ships under the distinct name `eigh-cuda12`, built from this same
-> repo. CPU users `pip install eigh`; GPU users `pip install eigh-cuda12`. This
-> mirrors `jaxlib` vs `jax-cuda12-plugin`.
+| Package | Built against | Runs on CUDA | glibc | Pick when |
+| --- | --- | --- | --- | --- |
+| `eigh-cuda120` | CUDA 12.0 | **12.0 – 12.8+** | 2.17 | older clusters, or unsure (max compatibility) |
+| `eigh-cuda128` | CUDA 12.8 | **12.8+** | 2.34 | modern clusters wanting the newer toolchain |
+
+> **Why separate packages?** A single normal PyPI package cannot serve a small
+> CPU wheel to CPU users *and* GPU wheels to GPU users (PyPI wheel-variants are
+> not GA), and one GPU wheel can only target one CUDA version. So CPU users
+> `pip install eigh`; GPU users pick `eigh-cuda120` / `eigh-cuda128`. All are
+> built from this same repo — this mirrors `jaxlib` vs `jax-cuda12-plugin`.
 >
-> The published GPU wheel is built in CI but **functionally tested only on real
-> GPU hardware** before each release (CI has no GPU). If you rely on it, sanity
+> The GPU wheels are built in CI but **functionally tested only on real GPU
+> hardware** before each release (CI has no GPU). If you rely on one, sanity
 > check on your own device.
 
 ### GPU (build from source on the cluster)
 
-If you need a CUDA version other than 12, a custom toolchain, or a platform with
-no `eigh-cuda12` wheel, build from source on the GPU machine:
+If you need a CUDA version other than the prebuilt `eigh-cuda120` / `eigh-cuda128`
+targets, a custom toolchain, or a platform with no prebuilt wheel, build from
+source on the GPU machine:
 
 There is no prebuilt GPU wheel — you compile one on the cluster against its CUDA
 12 toolkit. The key flag is **`--no-build-isolation`**: it builds the FFI handler
@@ -195,17 +205,17 @@ GPU FFI under `platform="gpu"`.
 | Aspect | Support | Notes |
 | --- | --- | --- |
 | CUDA major version | **CUDA 12 only** | JAX ≥0.5 ships only `cuda12` plugins (`jax[cuda12]`). CUDA 11 is **not** supported — it would require `jax[cuda11]`, dropped in modern JAX. |
-| Built/tested toolkit | **CUDA 12.8** | Prebuilt `eigh-cuda12` wheels are built with the CUDA 12.8 toolkit; any CUDA 12.x toolkit should build from source. |
-| Prebuilt wheel glibc | **glibc 2.34** (manylinux_2_34) | The GPU wheel targets RHEL 9+ / Ubuntu 22.04+ (the CUDA 12.8 + GCC 14 build image is manylinux_2_34). This is newer than the CPU wheel's glibc 2.28 floor. Older GPU clusters: build from source. |
+| Prebuilt wheels | **`eigh-cuda120`** (CUDA 12.0, glibc 2.17) and **`eigh-cuda128`** (CUDA 12.8, glibc 2.34) | `eigh-cuda120` is forward-compatible to 12.8+ and the safer default; `eigh-cuda128` targets modern toolchains. Any CUDA 12.x toolkit can also build from source. |
 | cuSOLVER API | CUDA 8+ | The `*sygvd`/`*hegvd` dense API is long-stable, so there is no upper CUDA-12 bound from the API surface. |
 | Compute capability | nvcc default for the toolkit | No explicit `-arch` is set; PTX JITs forward to newer GPUs. Set `CMAKE_CUDA_ARCHITECTURES` to target a specific SM. |
 | FFI ABI across JAX | Same `MAJOR == 0` stability as CPU | The GPU handler is forward-compatible across jax 0.5→0.9 just like the CPU one. |
 
 **Where the GPU path breaks / what to know:**
-- **Prebuilt GPU wheel:** `pip install eigh-cuda12` (Linux x86_64, CUDA 12). The
-  default `pip install eigh` is **CPU-only** — pairing it with `jax[cuda12]`
-  does *not* enable GPU, because the CUDA kernel must be compiled into the wheel
-  and the CPU wheel does not contain it.
+- **Prebuilt GPU wheels:** `pip install eigh-cuda120` (CUDA 12.0+, the safer
+  default) or `eigh-cuda128` (CUDA 12.8+), Linux x86_64. The default `pip install
+  eigh` is **CPU-only** — pairing it with `jax[cuda12]` does *not* enable GPU,
+  because the CUDA kernel must be compiled into the wheel and the CPU wheel does
+  not contain it.
 - **GPU wheels are built in CI but not GPU-tested there** (no GPU runner); CI
   only checks the extension loads. Verify on real hardware before relying on a
   release.

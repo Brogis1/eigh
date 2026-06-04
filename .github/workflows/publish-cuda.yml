@@ -1,8 +1,13 @@
-name: Build and publish CUDA wheels (eigh-cuda12)
+name: Build and publish CUDA wheels (eigh-cuda120 / eigh-cuda128)
 
-# Builds the GPU package `eigh-cuda12` from the SAME repository/source tree as
-# the CPU `eigh` package. One repo, two PyPI names. Triggered by the same
-# version tags as the CPU publish workflow.
+# Builds the GPU packages from the SAME repository/source tree as the CPU `eigh`
+# package. One repo, multiple PyPI names. Two CUDA targets:
+#
+#   eigh-cuda120 -> built against CUDA 12.0 (manylinux2014 / glibc 2.17).
+#                   Forward-compatible: runs on CUDA 12.0 through 12.8+.
+#                   Widest reach; the right default for older clusters.
+#   eigh-cuda128 -> built against CUDA 12.8 (manylinux_2_34 / glibc 2.34).
+#                   Requires CUDA 12.8+; newer toolkit/glibc.
 #
 # IMPORTANT: GitHub-hosted runners have no GPU. CI compiles the CUDA kernel and
 # verifies the extension LOADS, but cannot run it on a device. Verify real GPU
@@ -16,86 +21,83 @@ on:
 
 jobs:
   build_cuda_wheels:
-    name: Build CUDA wheels (linux x86_64)
+    name: Build ${{ matrix.pkg }} (CUDA ${{ matrix.cuda }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pkg: eigh-cuda120
+            cuda: "12.0"
+            pyproject: pyproject-cuda120.toml
+            image: sameli/manylinux2014_x86_64_cuda_12.0
+          - pkg: eigh-cuda128
+            cuda: "12.8"
+            pyproject: pyproject-cuda128.toml
+            image: sameli/manylinux_2_34_x86_64_cuda_12.8
 
     steps:
       - uses: actions/checkout@v4
 
-      # Build eigh-cuda12 instead of eigh by swapping the project config. The
-      # source tree is identical; only [project].name, deps, and the forced
-      # CUDA build differ.
+      # Build this CUDA variant by swapping in its project config. The source
+      # tree is identical; only [project].name and the CUDA target differ.
       - name: Select the CUDA build configuration
-        run: cp pyproject-cuda.toml pyproject.toml
+        run: cp ${{ matrix.pyproject }} pyproject.toml
 
       - name: Build CUDA wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_ARCHS_LINUX: x86_64
-          # Build inside a manylinux image that ships a COMPLETE CUDA 12 toolkit
-          # (real nvcc + cudart/cusolver/cublas dev libs under /usr/local/cuda).
-          # This replaces the earlier "install nvcc via pip wheels" approach,
-          # which does NOT work: the nvidia-cuda-nvcc-cu12 wheel ships only ptxas,
-          # not the nvcc driver.
-          #
-          # CUDA 12.8 (not 12.3): the images ship GCC 14, and nvcc 12.3 REJECTS
-          # GCC > 13, failing the CUDA compiler-id test. nvcc 12.8 officially
-          # supports GCC 14, so no host-compiler hack is needed. The toolkit
-          # binaries stay forward-compatible with newer CUDA 12.x runtimes/drivers.
-          #
-          # Tradeoff: this image is manylinux_2_34 (glibc 2.34, RHEL 9+/Ubuntu
-          # 22.04+) rather than the CPU wheels' manylinux_2_28 (glibc 2.28). Most
-          # modern GPU clusters meet 2.34; very old ones must build from source.
-          CIBW_MANYLINUX_X86_64_IMAGE: sameli/manylinux_2_34_x86_64_cuda_12.8
-          # The image already puts /usr/local/cuda/bin on PATH and sets CUDA_HOME,
-          # so nvcc IS present — but cibuildwheel's CIBW_ENVIRONMENT handling can
-          # shadow the image PATH and make CMake's check_language(CUDA) miss it.
-          # Instead of overriding PATH, hand CMake the compiler path explicitly
-          # via a build config-setting. This makes CUDA detection unconditional.
+          # manylinux image with a COMPLETE CUDA toolkit (real nvcc + dev libs in
+          # /usr/local/cuda). The CUDA version and its matching GCC are baked into
+          # the image, so each variant builds with a compatible host compiler:
+          #   12.0 image -> GCC 10 (devtoolset-10), nvcc 12.0 accepts it
+          #   12.8 image -> GCC 14, nvcc 12.8 accepts it
+          CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.image }}
           CIBW_BEFORE_BUILD: "pip install 'jaxlib==0.5.*'"
-          # Hand CMake the toolkit explicitly so enable_language(CUDA) always
-          # finds it. CMAKE_CUDA_COMPILER is set via config-settings in
-          # pyproject-cuda.toml (NOT here as CIBW_CONFIG_SETTINGS, which would
-          # clobber the per-interpreter wheel.py-api=cp312 abi3 override). CUDACXX
-          # is a belt-and-braces env fallback for the CMake autodetect path.
+          # Hand CMake the toolkit explicitly (CMAKE_CUDA_COMPILER is in the
+          # pyproject config-settings; CUDACXX/CUDA_HOME are env fallbacks).
           CIBW_ENVIRONMENT_LINUX: 'CUDACXX=/usr/local/cuda/bin/nvcc CUDA_HOME=/usr/local/cuda'
-          # Do NOT vendor the toolkit's CUDA libraries into the wheel. We build
-          # against the image's toolkit but resolve cusolver/cublas/cudart at
-          # RUNTIME from the NVIDIA pip wheels (declared as deps in
-          # pyproject-cuda.toml, found via the RPATH set in CMakeLists.txt).
-          # Bundling would add hundreds of MB and could clash with the pip libs.
+          # Do NOT vendor CUDA libraries into the wheel. Build against the image's
+          # toolkit but resolve them at RUNTIME from the NVIDIA pip wheels (deps in
+          # the pyproject, found via RPATH from CMakeLists.txt). cusolver pulls in
+          # cublas/cublasLt/cusparse/nvJitLink/nvrtc transitively, so ALL of those
+          # must be excluded or auditwheel bundles them (-> hundreds of MB). Both
+          # .so.11 and .so.12 majors are listed so the same command works for the
+          # 12.0 and 12.8 toolkits regardless of each lib's SONAME major.
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
             auditwheel repair -w {dest_dir}
-            --exclude libcudart.so.12 --exclude libcusolver.so.11
-            --exclude libcublas.so.12 --exclude libcublasLt.so.12
-            --exclude libnvJitLink.so.12
+            --exclude libcudart.so.11 --exclude libcudart.so.12
+            --exclude libcublas.so.11 --exclude libcublas.so.12
+            --exclude libcublasLt.so.11 --exclude libcublasLt.so.12
+            --exclude libcusolver.so.11 --exclude libcusolver.so.12
+            --exclude libcusolverMg.so.11 --exclude libcusolverMg.so.12
+            --exclude libcusparse.so.11 --exclude libcusparse.so.12
+            --exclude libnvJitLink.so.11 --exclude libnvJitLink.so.12
+            --exclude libnvrtc.so.11 --exclude libnvrtc.so.12
+            --exclude libnvrtc-builtins.so.11 --exclude libnvrtc-builtins.so.12
             {wheel}
-          # No GPU in CI. Assert only that the compiled CUDA extension DLOPENS
-          # and exposes its registration symbols. We import the eigh_cuda module
-          # directly rather than eigh._core, because _core registers a "gpu"
-          # platform FFI target with JAX, which can require a live GPU backend
-          # that CI lacks. A successful dlopen proves the kernel compiled and its
-          # CUDA runtime deps resolve; real device execution is verified on GPU
-          # hardware before a release.
+          # No GPU in CI. Assert only that the compiled CUDA extension DLOPENS and
+          # exposes its registration symbols (importing eigh_cuda directly, not
+          # eigh._core, which would register a "gpu" FFI target needing a live
+          # backend). Real device execution is verified on GPU hardware first.
           CIBW_TEST_COMMAND: >-
             python -c "from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations');
             print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))"
 
-      # Safety net: the wheel must contain only our small compiled extensions,
-      # NOT the bundled CUDA libraries (those come from the NVIDIA pip wheel
-      # dependencies). If auditwheel ever vendors a CUDA lib despite --exclude,
+      # Safety net: the wheel must contain only our small compiled extensions, NOT
+      # bundled CUDA libraries. If auditwheel ever vendors one despite --exclude,
       # the wheel balloons to hundreds of MB. Fail loudly so a giant wheel can
-      # never be published silently. 50 MB is far above our real size (~1 MB)
-      # and far below a single bundled CUDA lib (300-600 MB).
+      # never publish silently. 50 MB >> our real size (~1 MB), << one CUDA lib.
       - name: Guard against accidentally bundling CUDA libraries
         run: |
           max=$((50 * 1024 * 1024))
           fail=0
           for w in wheelhouse/*.whl; do
-            sz=$(stat -f%z "$w" 2>/dev/null || stat -c%s "$w")
+            sz=$(stat -c%s "$w")
             echo "$(basename "$w"): $((sz / 1024 / 1024)) MB"
             if [ "$sz" -gt "$max" ]; then
-              echo "::error::$w exceeds 50 MB — a CUDA library was likely bundled. Check the auditwheel --exclude list against the actual SONAMEs."
+              echo "::error::$w exceeds 50 MB — a CUDA library was bundled. Check the auditwheel --exclude list against the linked SONAMEs (readelf -d on eigh_cuda*.so)."
               fail=1
             fi
           done
@@ -103,7 +105,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-cuda-wheels
+          name: cibw-cuda-wheels-${{ matrix.pkg }}
           path: ./wheelhouse/*.whl
 
   upload_pypi_cuda:
@@ -114,14 +116,17 @@ jobs:
       id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
+      # Both variants' wheels (cibw-cuda-wheels-eigh-cuda120 and -eigh-cuda128).
+      # They are distinct PyPI projects but uploaded together — twine/publish
+      # handles multiple distributions in one dist/ dir fine.
       - uses: actions/download-artifact@v4
         with:
-          name: cibw-cuda-wheels
+          pattern: cibw-cuda-wheels-*
           path: dist
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          # Publishes to the eigh-cuda12 PyPI project (first upload creates it).
-          # Reuses the same PyPI token / trusted-publishing setup as `eigh`.
+          # First upload of each name auto-creates that PyPI project. Reuses the
+          # same account-scoped PyPI token as `eigh` (must allow new projects).
           password: ${{ secrets.PYPI_API_TOKEN }}
