@@ -28,7 +28,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda12"
-version = "0.3.1"
+version = "0.3.2"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
