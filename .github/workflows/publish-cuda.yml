@@ -1,0 +1,83 @@
+name: Build and publish CUDA wheels (eigh-cuda12)
+
+# Builds the GPU package `eigh-cuda12` from the SAME repository/source tree as
+# the CPU `eigh` package. One repo, two PyPI names. Triggered by the same
+# version tags as the CPU publish workflow.
+#
+# IMPORTANT: GitHub-hosted runners have no GPU. CI compiles the CUDA kernel and
+# verifies the extension LOADS, but cannot run it on a device. Verify real GPU
+# correctness on a CUDA machine/cluster before trusting a release.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_cuda_wheels:
+    name: Build CUDA wheels (linux x86_64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build eigh-cuda12 instead of eigh by swapping the project config. The
+      # source tree is identical; only [project].name, deps, and the forced
+      # CUDA build differ.
+      - name: Select the CUDA build configuration
+        run: cp pyproject-cuda.toml pyproject.toml
+
+      - name: Build CUDA wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        env:
+          CIBW_ARCHS_LINUX: x86_64
+          # manylinux_2_28 (glibc 2.28) matches the CPU wheels and modern HPC.
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          # Install the CUDA 12 toolchain + dev libraries INSIDE the build
+          # container via NVIDIA's pip wheels (no system CUDA needed):
+          #   - nvcc           -> compiles src/cuda/*.cc (LANGUAGE CUDA)
+          #   - cudart/cusolver/cublas dev wheels -> headers + link libs
+          # Then expose nvcc on PATH and point CMake at the CUDA root so
+          # check_language(CUDA) succeeds.
+          CIBW_BEFORE_ALL_LINUX: >-
+            pip install nvidia-cuda-nvcc-cu12 nvidia-cuda-runtime-cu12
+            nvidia-cusolver-cu12 nvidia-cublas-cu12 nvidia-cuda-cccl-cu12 &&
+            echo "CUDA toolchain installed via pip wheels"
+          # Locate the pip-installed CUDA toolchain at configure time. The exact
+          # site-packages path is resolved in the build env (next var).
+          CIBW_ENVIRONMENT_LINUX: >-
+            CUDA_PIP=$(python -c "import nvidia.cuda_nvcc, os; print(os.path.dirname(nvidia.cuda_nvcc.__file__))")
+            CUDACXX="$CUDA_PIP/bin/nvcc"
+            PATH="$CUDA_PIP/bin:$PATH"
+          # Forward-compat jaxlib pin (same as CPU build).
+          CIBW_BEFORE_BUILD: "pip install 'jaxlib==0.5.*'"
+          # No GPU in CI: only assert the compiled extension loads + registers.
+          CIBW_TEST_COMMAND: >-
+            python -c "import eigh._core as c; assert c._cuda_available,
+            'eigh_cuda failed to load'; print('eigh_cuda loaded + registered')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-cuda-wheels
+          path: ./wheelhouse/*.whl
+
+  upload_pypi_cuda:
+    needs: [build_cuda_wheels]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: cibw-cuda-wheels
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Publishes to the eigh-cuda12 PyPI project (first upload creates it).
+          # Reuses the same PyPI token / trusted-publishing setup as `eigh`.
+          password: ${{ secrets.PYPI_API_TOKEN }}

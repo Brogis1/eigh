@@ -2,14 +2,18 @@
 requires = [
     "scikit-build-core>=0.8",
     "nanobind>=1.0.0",
-    "jaxlib>=0.4.0",
+    # Build against the OLDEST supported jaxlib so the compiled FFI handler
+    # stays forward-compatible with every newer jaxlib (the XLA FFI C ABI is
+    # stable within XLA_FFI_API_MAJOR == 0, verified on jax 0.5.3 -> 0.9.2).
+    # Building against the latest jaxlib instead would break loading on 0.5/0.6.
+    "jaxlib==0.5.*",
     "numpy>=1.20.0",
 ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh"
-version = "0.2.2"
+version = "0.3.0"
 description = "Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,19 +33,24 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
 keywords = ["jax", "eigenvalue", "linear-algebra", "gpu", "cuda", "autodiff"]
 dependencies = [
-    "jax>=0.4.0",
-    "jaxlib>=0.4.0",
+    # Floor at 0.5: the FFI custom-call API used by the compiled handler did
+    # not stabilize until the 0.5 series. 0.4.x used the pre-FFI custom-call
+    # registration and is intentionally unsupported. No upper bound: verified
+    # working through jax 0.9.2.
+    "jax>=0.5.0",
+    "jaxlib>=0.5.0",
     "numpy>=1.20.0",
 ]
 
 [project.optional-dependencies]
-cuda = ["jax[cuda12]>=0.4.0"]
-cuda-local = ["jax[cuda12-local]>=0.4.0"]
+cuda = ["jax[cuda12]>=0.5.0"]
+cuda-local = ["jax[cuda12-local]>=0.5.0"]
 test = ["pytest>=7.0.0", "scipy>=1.7.0"]
 dev = ["pytest>=7.0.0", "scipy>=1.7.0"]
 
@@ -58,15 +67,39 @@ build-dir = "build/{wheel_tag}"
 # Specify the wheel package locations
 wheel.packages = ["src/python/eigh"]
 
-# Use stable ABI for broader Python compatibility
+# Default to a version-specific wheel (safe on every interpreter). The abi3
+# wheel is opt-in PER INTERPRETER via cibuildwheel overrides: on CPython >=3.12
+# CI sets wheel.py-api="cp312" to emit one cp312-abi3 wheel that also serves
+# 3.13+. nanobind's stable ABI only exists from 3.12 and it FATAL_ERRORs on any
+# py-api below cp312, so 3.10/3.11 MUST keep this "" default and ship as plain
+# cpython-3XX wheels. See .github/workflows/publish.yml [tool.cibuildwheel]
+# overrides and the STABLE_ABI/Developme1nt.SABIModule setup in CMakeLists.txt.
 wheel.py-api = ""
 
 [tool.scikit-build.cmake.define]
 
 [tool.cibuildwheel]
 build-verbosity = 1
+# cp310/cp311 -> version-specific wheels (nanobind's abi3 needs CPython >= 3.12).
+# cp312       -> one cp312-abi3 wheel that also serves 3.13+ (see override below).
+# cp313 is intentionally not built: it would only duplicate the cp312-abi3 wheel.
+build = "cp310-* cp311-* cp312-*"
 # Skip PyPy, Python 3.8/3.9 (jaxlib compatibility), and musllinux (Alpine)
 skip = "pp* cp38-* cp39-* *-musllinux_*"
+# Build the FFI handler against the OLDEST supported jaxlib so the XLA FFI ABI
+# stays forward-compatible with every newer jaxlib (verified jax 0.5.3 -> 0.9.2).
+before-build = "pip install 'jaxlib==0.5.*'"
+# Verify the compiled extension actually loads in the installed wheel (catches
+# the abi3 floor trap and a Linux wheel missing its bundled BLAS/LAPACK).
+test-skip = "*-macosx_arm64"
+test-command = "python -c \"from eigh.eigh_lapack import initialize; initialize(); print('extension OK')\""
+
+# Emit a stable-ABI (abi3) wheel ONLY on CPython >= 3.12, where nanobind's
+# stable ABI exists. This single wheel also serves 3.13+. On 3.10/3.11 the
+# default wheel.py-api="" from [tool.scikit-build] applies (plain cpython-3XX).
+[[tool.cibuildwheel.overrides]]
+select = "cp312-*"
+config-settings."wheel.py-api" = "cp312"
 
 [tool.cibuildwheel.linux]
 # Install BLAS/LAPACK on the build container

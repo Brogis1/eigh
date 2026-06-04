@@ -18,16 +18,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Build matrix, jaxlib build-pin, abi3 override and load-test all live in
+      # [tool.cibuildwheel] in pyproject.toml (single source of truth). Only
+      # arch/image selection is set here.
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_ARCHS_MACOS: x86_64 arm64
           # Linux: only x86_64 for now (aarch64 requires QEMU and is slow)
           CIBW_ARCHS_LINUX: x86_64
-          # Use manylinux_2_28 (AlmaLinux 8) - CentOS 7 repos are dead
+          # manylinux_2_28 (AlmaLinux 8, glibc 2.28) - covers RHEL8+/Ubuntu18.04+
+          # clusters. CentOS 7 (glibc 2.17) is EOL and intentionally unsupported.
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
-          # Skip: PyPy (pp*), Python 3.8/3.9 (jaxlib compat), musllinux (Alpine)
-          CIBW_SKIP: "pp* cp38-* cp39-* *-musllinux_*"
 
       - uses: actions/upload-artifact@v4
         with:

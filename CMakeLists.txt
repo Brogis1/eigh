@@ -14,8 +14,12 @@ endif()
 # Find required packages
 # Use Development.Module instead of Development - manylinux containers
 # don't have full Python development files (libpython), but extension
-# modules don't need them anyway
-find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+# modules don't need them anyway.
+# Development.SABIModule is additionally required for nanobind's STABLE_ABI
+# (abi3) build: without it the Python::SABIModule target is absent and nanobind
+# silently falls back to a version-locked cpython-3XX module, which defeats the
+# single-abi3-wheel-per-platform goal. Building must use CPython >= 3.12.
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module Development.SABIModule)
 
 # Find nanobind
 execute_process(
@@ -84,9 +88,20 @@ set_target_properties(eigh_lapack PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src/python/eigh
 )
 
-# CUDA module (optional - only if CUDA is available)
+# CUDA module. By default it is optional and built only when a CUDA compiler is
+# found (CPU-only wheels skip it). Setting EIGH_REQUIRE_CUDA=ON makes a missing
+# nvcc a hard error, so the eigh-cuda12 package build can never silently produce
+# a CPU-only wheel under a GPU name.
+option(EIGH_REQUIRE_CUDA "Fail the build if CUDA toolchain is unavailable" OFF)
+
 include(CheckLanguage)
 check_language(CUDA)
+
+if(EIGH_REQUIRE_CUDA AND NOT CMAKE_CUDA_COMPILER)
+    message(FATAL_ERROR
+        "EIGH_REQUIRE_CUDA=ON but no CUDA compiler (nvcc) was found. "
+        "The eigh-cuda12 wheel must be built with the CUDA toolkit available.")
+endif()
 
 if(CMAKE_CUDA_COMPILER)
     enable_language(CUDA)
@@ -132,6 +147,19 @@ if(CMAKE_CUDA_COMPILER)
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/src/python/eigh
         CUDA_SEPARABLE_COMPILATION ON
     )
+
+    # When the eigh-cuda12 wheel depends on NVIDIA's pip CUDA wheels, the CUDA
+    # runtime libraries live in site-packages/nvidia/*/lib, NOT next to this .so.
+    # The module installs to site-packages/eigh/, so add RPATH entries that climb
+    # to site-packages (../) and into each nvidia/<lib>/lib directory. Without
+    # this the loader cannot find libcusolver/libcublas/libcudart at import time.
+    # ${ORIGIN} is escaped so it is written literally into the ELF RPATH.
+    if(EIGH_REQUIRE_CUDA)
+        set_target_properties(eigh_cuda PROPERTIES
+            BUILD_RPATH_USE_ORIGIN ON
+            INSTALL_RPATH "\$ORIGIN/../nvidia/cuda_runtime/lib;\$ORIGIN/../nvidia/cusolver/lib;\$ORIGIN/../nvidia/cublas/lib"
+        )
+    endif()
 
     message(STATUS "CUDA support enabled")
 else()

@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +44,58 @@ jobs:
 
       - name: Run JAX eigensolver tests
         run: pytest tests/test_jax_eigensolvers.py -v --tb=short
+
+  # Regression guard for the forward-compatibility guarantee: build ONE wheel
+  # (against the oldest supported jaxlib), then exercise the compiled FFI handler
+  # against a spread of JAX versions. This is the test that would have caught the
+  # 0.7.0 breakage that motivated the multi-version work.
+  compiled-ext-jax-matrix:
+    name: Compiled ext on JAX ${{ matrix.jax-version }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # 3.11 is the only interpreter installable across this whole JAX range
+        # (jax 0.7+ requires >=3.11; jax 0.5/0.6 still support 3.11).
+        jax-version: ["0.5.3", "0.6.2", "0.7.2", "0.8.3", "0.9.2"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install BLAS/LAPACK (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libopenblas-dev liblapack-dev
+
+      - name: Build wheel against the oldest supported jaxlib (0.5.x)
+        run: |
+          python -m pip install --upgrade pip
+          pip install "jaxlib==0.5.*" "scikit-build-core>=0.8" "nanobind>=1.0.0" numpy cmake ninja build
+          python -m build --wheel --no-isolation -o dist/
+
+      - name: Install the prebuilt wheel against JAX ${{ matrix.jax-version }}
+        run: |
+          pip install "jax[cpu]==${{ matrix.jax-version }}" "jaxlib==${{ matrix.jax-version }}"
+          pip install --no-deps --force-reinstall dist/*.whl
+
+      - name: Smoke test (compiled handler loads, runs, twice-differentiable)
+        run: |
+          python - <<'PY'
+          import jax, jax.numpy as jnp
+          jax.config.update("jax_enable_x64", True)
+          from eigh import eigh_gen
+          A = jnp.array([[2.0, 0.3], [0.3, 1.0]]); B = jnp.eye(2)
+          w = eigh_gen(A, B)[0]
+          h = jax.hessian(lambda M: jnp.sum(eigh_gen(M, B)[0] ** 2))(A)
+          assert bool(jnp.all(jnp.isfinite(h))), "Hessian not finite"
+          print(f"JAX {jax.__version__}: eigh_gen={w}, twice-diff OK")
+          PY
 
   pytest-jax-windows:
     name: JAX solvers (windows-latest, Python ${{ matrix.python-version }})
