@@ -45,9 +45,11 @@ jobs:
           # Instead of overriding PATH, hand CMake the compiler path explicitly
           # via a build config-setting. This makes CUDA detection unconditional.
           CIBW_BEFORE_BUILD: "pip install 'jaxlib==0.5.*'"
-          # Pass CMAKE_CUDA_COMPILER (and CUDACXX as a belt-and-braces fallback)
-          # so enable_language(CUDA) always finds the image's toolkit.
-          CIBW_CONFIG_SETTINGS: "cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc"
+          # Hand CMake the toolkit explicitly so enable_language(CUDA) always
+          # finds it. CMAKE_CUDA_COMPILER is set via config-settings in
+          # pyproject-cuda.toml (NOT here as CIBW_CONFIG_SETTINGS, which would
+          # clobber the per-interpreter wheel.py-api=cp312 abi3 override). CUDACXX
+          # is a belt-and-braces env fallback for the CMake autodetect path.
           CIBW_ENVIRONMENT_LINUX: 'CUDACXX=/usr/local/cuda/bin/nvcc CUDA_HOME=/usr/local/cuda'
           # Do NOT vendor the toolkit's CUDA libraries into the wheel. We build
           # against the image's toolkit but resolve cusolver/cublas/cudart at
