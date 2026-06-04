@@ -26,7 +26,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda128"
-version = "0.3.5"
+version = "0.3.6"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12.8 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -93,7 +93,10 @@ EIGH_REQUIRE_CUDA = "ON"
 build-verbosity = 1
 build = "cp310-* cp311-* cp312-*"
 skip = "pp* cp38-* cp39-* *-musllinux_*"
-before-build = "pip install 'jaxlib==0.5.*'"
+# --no-deps: install jaxlib only for its bundled XLA FFI headers; pulling its
+# deps drags in scipy, which can build from source and fail on OpenBLAS in the
+# build image. Headers are in the jaxlib wheel itself.
+before-build = "pip install --no-deps 'jaxlib==0.5.*'"
 config-settings."cmake.define.CMAKE_CUDA_COMPILER" = "/usr/local/cuda/bin/nvcc"
 test-command = "python -c \"from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations'); print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))\""
 

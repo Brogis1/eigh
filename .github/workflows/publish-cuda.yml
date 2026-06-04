@@ -54,7 +54,13 @@ jobs:
           #   12.0 image -> GCC 10 (devtoolset-10), nvcc 12.0 accepts it
           #   12.8 image -> GCC 14, nvcc 12.8 accepts it
           CIBW_MANYLINUX_X86_64_IMAGE: ${{ matrix.image }}
-          CIBW_BEFORE_BUILD: "pip install 'jaxlib==0.5.*'"
+          # --no-deps: we install jaxlib ONLY for its bundled XLA FFI headers
+          # (xla/ffi/api/ffi.h) that CMake compiles against. Pulling jaxlib's
+          # deps drags in scipy, which has no manylinux2014 wheel for newer
+          # versions and then tries to build from source against OpenBLAS — that
+          # fails in the CUDA 12.0 (manylinux2014) image. The headers are in the
+          # jaxlib wheel itself, so --no-deps is sufficient and avoids the trap.
+          CIBW_BEFORE_BUILD: "pip install --no-deps 'jaxlib==0.5.*'"
           # Hand CMake the toolkit explicitly (CMAKE_CUDA_COMPILER is in the
           # pyproject config-settings; CUDACXX/CUDA_HOME are env fallbacks).
           CIBW_ENVIRONMENT_LINUX: 'CUDACXX=/usr/local/cuda/bin/nvcc CUDA_HOME=/usr/local/cuda'
