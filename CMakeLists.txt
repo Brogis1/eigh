@@ -94,8 +94,26 @@ set_target_properties(eigh_lapack PROPERTIES
 # a CPU-only wheel under a GPU name.
 option(EIGH_REQUIRE_CUDA "Fail the build if CUDA toolchain is unavailable" OFF)
 
-include(CheckLanguage)
-check_language(CUDA)
+# Resolve the CUDA compiler robustly. If the caller passed CMAKE_CUDA_COMPILER
+# explicitly (e.g. the eigh-cuda12 CI passes /usr/local/cuda/bin/nvcc), trust it
+# and skip check_language(CUDA) — that probe runs its own detection and can fail
+# to honor a pre-set compiler inside cibuildwheel's environment. Otherwise fall
+# back to autodetection (CUDACXX env, then check_language) for source builds.
+if(NOT CMAKE_CUDA_COMPILER AND DEFINED ENV{CUDACXX})
+    set(CMAKE_CUDA_COMPILER "$ENV{CUDACXX}" CACHE FILEPATH "CUDA compiler")
+endif()
+
+if(NOT CMAKE_CUDA_COMPILER)
+    include(CheckLanguage)
+    check_language(CUDA)
+endif()
+
+if(CMAKE_CUDA_COMPILER AND NOT EXISTS "${CMAKE_CUDA_COMPILER}")
+    message(WARNING "CMAKE_CUDA_COMPILER set to '${CMAKE_CUDA_COMPILER}' but that "
+                    "path does not exist; treating CUDA as unavailable.")
+    unset(CMAKE_CUDA_COMPILER)
+    unset(CMAKE_CUDA_COMPILER CACHE)
+endif()
 
 if(EIGH_REQUIRE_CUDA AND NOT CMAKE_CUDA_COMPILER)
     message(FATAL_ERROR

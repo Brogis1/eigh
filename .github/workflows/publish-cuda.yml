@@ -39,12 +39,16 @@ jobs:
           # ships only ptxas, not the nvcc compiler driver. CUDA 12.3 toolkit
           # binaries are forward-compatible with newer CUDA 12.x runtimes/drivers.
           CIBW_MANYLINUX_X86_64_IMAGE: sameli/manylinux_2_28_x86_64_cuda_12.3
-          # Point CMake's check_language(CUDA) at the toolkit in the image.
-          CIBW_ENVIRONMENT_LINUX: >-
-            CUDACXX=/usr/local/cuda/bin/nvcc
-            PATH=/usr/local/cuda/bin:$PATH
-          # Forward-compat jaxlib pin (same as CPU build).
+          # The image already puts /usr/local/cuda/bin on PATH and sets CUDA_HOME,
+          # so nvcc IS present — but cibuildwheel's CIBW_ENVIRONMENT handling can
+          # shadow the image PATH and make CMake's check_language(CUDA) miss it.
+          # Instead of overriding PATH, hand CMake the compiler path explicitly
+          # via a build config-setting. This makes CUDA detection unconditional.
           CIBW_BEFORE_BUILD: "pip install 'jaxlib==0.5.*'"
+          # Pass CMAKE_CUDA_COMPILER (and CUDACXX as a belt-and-braces fallback)
+          # so enable_language(CUDA) always finds the image's toolkit.
+          CIBW_CONFIG_SETTINGS: "cmake.define.CMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc"
+          CIBW_ENVIRONMENT_LINUX: 'CUDACXX=/usr/local/cuda/bin/nvcc CUDA_HOME=/usr/local/cuda'
           # Do NOT vendor the toolkit's CUDA libraries into the wheel. We build
           # against the image's toolkit but resolve cusolver/cublas/cudart at
           # RUNTIME from the NVIDIA pip wheels (declared as deps in
