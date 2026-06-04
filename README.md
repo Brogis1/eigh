@@ -195,7 +195,8 @@ GPU FFI under `platform="gpu"`.
 | Aspect | Support | Notes |
 | --- | --- | --- |
 | CUDA major version | **CUDA 12 only** | JAX ≥0.5 ships only `cuda12` plugins (`jax[cuda12]`). CUDA 11 is **not** supported — it would require `jax[cuda11]`, dropped in modern JAX. |
-| Built/tested toolkit | **CUDA 12.8.1** | The local GPU env (`setup_gpu_env_clean.sh`) targets 12.8.1; any CUDA 12.x toolkit should build. |
+| Built/tested toolkit | **CUDA 12.8** | Prebuilt `eigh-cuda12` wheels are built with the CUDA 12.8 toolkit; any CUDA 12.x toolkit should build from source. |
+| Prebuilt wheel glibc | **glibc 2.34** (manylinux_2_34) | The GPU wheel targets RHEL 9+ / Ubuntu 22.04+ (the CUDA 12.8 + GCC 14 build image is manylinux_2_34). This is newer than the CPU wheel's glibc 2.28 floor. Older GPU clusters: build from source. |
 | cuSOLVER API | CUDA 8+ | The `*sygvd`/`*hegvd` dense API is long-stable, so there is no upper CUDA-12 bound from the API surface. |
 | Compute capability | nvcc default for the toolkit | No explicit `-arch` is set; PTX JITs forward to newer GPUs. Set `CMAKE_CUDA_ARCHITECTURES` to target a specific SM. |
 | FFI ABI across JAX | Same `MAJOR == 0` stability as CPU | The GPU handler is forward-compatible across jax 0.5→0.9 just like the CPU one. |

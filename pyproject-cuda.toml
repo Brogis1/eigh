@@ -28,7 +28,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda12"
-version = "0.3.3"
+version = "0.3.4"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -98,13 +98,25 @@ build-verbosity = 1
 build = "cp310-* cp311-* cp312-*"
 skip = "pp* cp38-* cp39-* *-musllinux_*"
 before-build = "pip install 'jaxlib==0.5.*'"
-# CI has no GPU, so we can only verify that the compiled extension *loads* and
-# registers its FFI target — not that it executes on a device. Real GPU
-# correctness is verified manually on a CUDA machine before trusting a release.
-test-command = "python -c \"import eigh._core as c; assert c._cuda_available, 'eigh_cuda failed to load'; print('eigh_cuda loaded + registered')\""
+# Hand CMake the CUDA compiler from the build image explicitly. check_language()
+# can miss the image's nvcc under cibuildwheel's environment, so we set the
+# compiler path directly here (merged with the cp312 abi3 override below — set
+# in pyproject, NOT via the CIBW_CONFIG_SETTINGS env var, which would REPLACE
+# the override rather than merge with it).
+config-settings."cmake.define.CMAKE_CUDA_COMPILER" = "/usr/local/cuda/bin/nvcc"
+# CI has no GPU. Assert only that the compiled CUDA extension DLOPENS and exposes
+# its registration symbols — import eigh_cuda directly rather than eigh._core,
+# which registers a "gpu" platform FFI target that can require a live GPU backend
+# CI lacks. Real device execution is verified on GPU hardware before a release.
+test-command = "python -c \"from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations'); print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))\""
 
 [[tool.cibuildwheel.overrides]]
 select = "cp312-*"
+# APPEND so this override adds wheel.py-api WITHOUT dropping the base
+# config-settings (CMAKE_CUDA_COMPILER). Without inherit=append, the override
+# would replace config-settings entirely and the cp312 GPU build would lose the
+# CUDA compiler path and fail.
+inherit.config-settings = "append"
 config-settings."wheel.py-api" = "cp312"
 
 [tool.cibuildwheel.linux]

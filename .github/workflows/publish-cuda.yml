@@ -32,13 +32,21 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_ARCHS_LINUX: x86_64
-          # Build inside a manylinux_2_28 image that ships a COMPLETE CUDA 12
-          # toolkit (real nvcc + cudart/cusolver/cublas dev libs under
-          # /usr/local/cuda). This replaces the earlier "install nvcc via pip
-          # wheels" approach, which does NOT work: the nvidia-cuda-nvcc-cu12 wheel
-          # ships only ptxas, not the nvcc compiler driver. CUDA 12.3 toolkit
-          # binaries are forward-compatible with newer CUDA 12.x runtimes/drivers.
-          CIBW_MANYLINUX_X86_64_IMAGE: sameli/manylinux_2_28_x86_64_cuda_12.3
+          # Build inside a manylinux image that ships a COMPLETE CUDA 12 toolkit
+          # (real nvcc + cudart/cusolver/cublas dev libs under /usr/local/cuda).
+          # This replaces the earlier "install nvcc via pip wheels" approach,
+          # which does NOT work: the nvidia-cuda-nvcc-cu12 wheel ships only ptxas,
+          # not the nvcc driver.
+          #
+          # CUDA 12.8 (not 12.3): the images ship GCC 14, and nvcc 12.3 REJECTS
+          # GCC > 13, failing the CUDA compiler-id test. nvcc 12.8 officially
+          # supports GCC 14, so no host-compiler hack is needed. The toolkit
+          # binaries stay forward-compatible with newer CUDA 12.x runtimes/drivers.
+          #
+          # Tradeoff: this image is manylinux_2_34 (glibc 2.34, RHEL 9+/Ubuntu
+          # 22.04+) rather than the CPU wheels' manylinux_2_28 (glibc 2.28). Most
+          # modern GPU clusters meet 2.34; very old ones must build from source.
+          CIBW_MANYLINUX_X86_64_IMAGE: sameli/manylinux_2_34_x86_64_cuda_12.8
           # The image already puts /usr/local/cuda/bin on PATH and sets CUDA_HOME,
           # so nvcc IS present — but cibuildwheel's CIBW_ENVIRONMENT handling can
           # shadow the image PATH and make CMake's check_language(CUDA) miss it.
@@ -72,6 +80,26 @@ jobs:
           CIBW_TEST_COMMAND: >-
             python -c "from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations');
             print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))"
+
+      # Safety net: the wheel must contain only our small compiled extensions,
+      # NOT the bundled CUDA libraries (those come from the NVIDIA pip wheel
+      # dependencies). If auditwheel ever vendors a CUDA lib despite --exclude,
+      # the wheel balloons to hundreds of MB. Fail loudly so a giant wheel can
+      # never be published silently. 50 MB is far above our real size (~1 MB)
+      # and far below a single bundled CUDA lib (300-600 MB).
+      - name: Guard against accidentally bundling CUDA libraries
+        run: |
+          max=$((50 * 1024 * 1024))
+          fail=0
+          for w in wheelhouse/*.whl; do
+            sz=$(stat -f%z "$w" 2>/dev/null || stat -c%s "$w")
+            echo "$(basename "$w"): $((sz / 1024 / 1024)) MB"
+            if [ "$sz" -gt "$max" ]; then
+              echo "::error::$w exceeds 50 MB — a CUDA library was likely bundled. Check the auditwheel --exclude list against the actual SONAMEs."
+              fail=1
+            fi
+          done
+          exit $fail
 
       - uses: actions/upload-artifact@v4
         with:

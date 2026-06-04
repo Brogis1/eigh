@@ -122,6 +122,20 @@ if(EIGH_REQUIRE_CUDA AND NOT CMAKE_CUDA_COMPILER)
 endif()
 
 if(CMAKE_CUDA_COMPILER)
+    # nvcc enforces a host-compiler version check and refuses GCC newer than the
+    # CUDA toolkit officially supports. The CI build image pairs CUDA 12.8 with
+    # GCC 14 (a supported combination), so this is OFF by default. Turn it ON
+    # (-DEIGH_CUDA_ALLOW_UNSUPPORTED=ON) only if you must build with an
+    # officially-unsupported toolkit/GCC pairing (e.g. CUDA 12.3 + GCC 14); it
+    # bypasses the check but may then hit header incompatibilities. Must be set
+    # BEFORE enable_language(CUDA), since the compiler-id test trips the check.
+    option(EIGH_CUDA_ALLOW_UNSUPPORTED
+        "Pass -allow-unsupported-compiler to nvcc (for GCC > toolkit max)" OFF)
+    if(EIGH_CUDA_ALLOW_UNSUPPORTED)
+        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -allow-unsupported-compiler"
+            CACHE STRING "CUDA flags" FORCE)
+    endif()
+
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_STANDARD_REQUIRED ON)
