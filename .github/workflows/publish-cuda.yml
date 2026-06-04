@@ -120,18 +120,39 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # Publish each CUDA variant INDEPENDENTLY. As a matrix job, each leg only
+    # downloads its own variant's artifact, so if one variant's build fails the
+    # other still publishes. Without this (a single upload job that needs the
+    # whole matrix build), one failing variant skips the entire upload — which is
+    # exactly why an earlier release published nothing despite one variant
+    # building fine. always() lets surviving legs run even if a sibling failed;
+    # the download then no-ops for any variant whose artifact is absent.
+    if: always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        pkg: [eigh-cuda120, eigh-cuda128]
     steps:
-      # Both variants' wheels (cibw-cuda-wheels-eigh-cuda120 and -eigh-cuda128).
-      # They are distinct PyPI projects but uploaded together — twine/publish
-      # handles multiple distributions in one dist/ dir fine.
+      # Download only THIS variant's wheels. If the variant's build failed, no
+      # artifact exists and the step finds nothing to publish (guarded below).
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
-          pattern: cibw-cuda-wheels-*
+          name: cibw-cuda-wheels-${{ matrix.pkg }}
           path: dist
-          merge-multiple: true
+
+      - name: Check wheels exist for ${{ matrix.pkg }}
+        id: check
+        run: |
+          if ls dist/*.whl >/dev/null 2>&1; then
+            echo "have_wheels=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "have_wheels=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No wheels for ${{ matrix.pkg }} — its build likely failed; skipping its publish."
+          fi
 
       - uses: pypa/gh-action-pypi-publish@release/v1
+        if: steps.check.outputs.have_wheels == 'true'
         with:
           # First upload of each name auto-creates that PyPI project. Reuses the
           # same account-scoped PyPI token as `eigh` (must allow new projects).
