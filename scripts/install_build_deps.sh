@@ -8,6 +8,14 @@ cat /etc/os-release 2>/dev/null || echo "No /etc/os-release found"
 # Detect package manager and install BLAS/LAPACK
 if command -v dnf &> /dev/null; then
     echo "Detected dnf based system (RHEL/AlmaLinux/Fedora)"
+    # openblas-devel / lapack-devel live in the CRB / PowerTools repo, which is
+    # not enabled by default on every image (notably custom CUDA manylinux
+    # images). Enable it best-effort so the install below can't silently fail
+    # with "No match for argument". The repo name differs across EL versions.
+    dnf install -y 'dnf-command(config-manager)' epel-release 2>/dev/null || true
+    dnf config-manager --set-enabled crb 2>/dev/null \
+        || dnf config-manager --set-enabled powertools 2>/dev/null \
+        || dnf config-manager --set-enabled PowerTools 2>/dev/null || true
     dnf install -y openblas-devel lapack-devel
 
 elif command -v yum &> /dev/null; then

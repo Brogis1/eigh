@@ -28,7 +28,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda12"
-version = "0.3.0"
+version = "0.3.1"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -106,3 +106,9 @@ test-command = "python -c \"import eigh._core as c; assert c._cuda_available, 'e
 [[tool.cibuildwheel.overrides]]
 select = "cp312-*"
 config-settings."wheel.py-api" = "cp312"
+
+[tool.cibuildwheel.linux]
+# The GPU build still compiles the CPU eigh_lapack module, which needs
+# BLAS/LAPACK. Install them in the CUDA manylinux container (AlmaLinux 8 / dnf).
+# Without this, CMake's find_package(BLAS) fails with "Could NOT find BLAS".
+before-all = "bash {project}/scripts/install_build_deps.sh"
