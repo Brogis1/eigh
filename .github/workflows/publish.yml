@@ -24,7 +24,10 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_ARCHS_MACOS: x86_64 arm64
+          # macOS arm64 only: JAX dropped macOS x86_64 (Intel) wheels at jaxlib
+          # 0.4.38, so our jaxlib>=0.5 runtime floor is unsatisfiable on Intel
+          # Macs — an x86_64 eigh wheel could never resolve its dependencies.
+          CIBW_ARCHS_MACOS: arm64
           # Linux: only x86_64 for now (aarch64 requires QEMU and is slow)
           CIBW_ARCHS_LINUX: x86_64
           # manylinux_2_28 (AlmaLinux 8, glibc 2.28) - covers RHEL8+/Ubuntu18.04+
@@ -33,7 +36,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          name: cibw-cpu-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -47,7 +50,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-sdist
+          name: cibw-cpu-sdist
           path: dist/*.tar.gz
 
   upload_pypi:
@@ -58,9 +61,13 @@ jobs:
       id-token: write
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
+      # Only the CPU `eigh` artifacts from THIS workflow run. download-artifact
+      # is scoped to the current run, so the eigh-cuda12 workflow (a separate
+      # run) can never contaminate this publish — the CPU release is fully
+      # independent of the GPU build's success or failure.
       - uses: actions/download-artifact@v4
         with:
-          pattern: cibw-*
+          pattern: cibw-cpu-*
           path: dist
           merge-multiple: true
 

@@ -90,8 +90,9 @@ skip = "pp* cp38-* cp39-* *-musllinux_*"
 # stays forward-compatible with every newer jaxlib (verified jax 0.5.3 -> 0.9.2).
 before-build = "pip install 'jaxlib==0.5.*'"
 # Verify the compiled extension actually loads in the installed wheel (catches
-# the abi3 floor trap and a Linux wheel missing its bundled BLAS/LAPACK).
-test-skip = "*-macosx_arm64"
+# the abi3 floor trap and a Linux wheel missing its bundled BLAS/LAPACK). The
+# macOS runner is arm64 and Linux x86_64 runs natively, so every built wheel can
+# be tested in-place; no test-skip needed.
 test-command = "python -c \"from eigh.eigh_lapack import initialize; initialize(); print('extension OK')\""
 
 # Emit a stable-ABI (abi3) wheel ONLY on CPython >= 3.12, where nanobind's

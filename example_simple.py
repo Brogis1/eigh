@@ -14,5 +14,5 @@ w2, v2 = eigh_gen(A, B)
 grad1 = jax.grad(lambda A: eigh(A)[0].sum())(A)
 grad2 = jax.grad(lambda A: eigh_gen(A, B)[0].sum())(A)
 print("Eigenvalues:", w1, w2)
-print("Eigenvectors:", v1, v2)
+print("Eigenvectors:", v1, v2)1
 print("Gradients computed:", grad1.shape, grad2.shape)

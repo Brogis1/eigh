@@ -32,6 +32,9 @@ All notable changes to `eigh` are documented in this file. Format loosely follow
 - Minimum supported JAX/jaxlib raised to **0.5.0** (was 0.4.0). The pre-FFI
   custom-call era (`jaxlib < 0.5`, e.g. 0.4.x) is no longer supported.
 - Wheels build against `manylinux_2_28` (glibc 2.28) — RHEL 8+ / Ubuntu 18.04+.
+- **macOS wheels are now arm64 (Apple Silicon) only.** JAX ships no `jaxlib`
+  ≥0.5 for macOS x86_64 (Intel), so an Intel-Mac `eigh` wheel could never resolve
+  its `jaxlib>=0.5` runtime dependency. Building x86_64 macOS wheels is dropped.
 
 ### Fixed
 - **`abi3` wheel was a no-op.** `wheel.py-api` was empty *and* the CMake
