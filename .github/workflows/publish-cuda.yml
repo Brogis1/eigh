@@ -84,13 +84,17 @@ jobs:
             --exclude libnvrtc.so.11 --exclude libnvrtc.so.12
             --exclude libnvrtc-builtins.so.11 --exclude libnvrtc-builtins.so.12
             {wheel}
-          # No GPU in CI. Assert only that the compiled CUDA extension DLOPENS and
-          # exposes its registration symbols (importing eigh_cuda directly, not
-          # eigh._core, which would register a "gpu" FFI target needing a live
-          # backend). Real device execution is verified on GPU hardware first.
-          CIBW_TEST_COMMAND: >-
-            python -c "from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations');
-            print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))"
+          # Skip cibuildwheel's automatic wheel test for the CUDA variants. It
+          # ALWAYS installs the wheel WITH its full dependency tree (no --no-deps
+          # option), which pulls jax[cuda12] → jaxlib/jax-cuda12-plugin. Those have
+          # NO manylinux2014 (glibc 2.17) wheels (min is 2.27), so the deps simply
+          # cannot install in the 2.17 test container — and there's no GPU in CI to
+          # exercise the kernel anyway. We instead verify the wheel out-of-band:
+          #   1. the size guard below proves no CUDA libs were bundled, and
+          #   2. a standalone dlopen check (run as a separate CI step, in a fresh
+          #      venv, installing ONLY the CUDA runtime libs the .so needs).
+          # Real device execution is verified on GPU hardware before a release.
+          CIBW_TEST_SKIP: "*"
 
       # Safety net: the wheel must contain only our small compiled extensions, NOT
       # bundled CUDA libraries. If auditwheel ever vendors one despite --exclude,
@@ -109,6 +113,30 @@ jobs:
             fi
           done
           exit $fail
+
+      # Standalone dlopen check (replaces cibuildwheel's skipped auto-test). Runs
+      # on the GitHub host (modern glibc, so the CUDA pip wheels install), in a
+      # fresh venv with ONLY the CUDA runtime libs + the wheel installed --no-deps
+      # (so jax/scipy are never pulled). Asserts the compiled eigh_cuda extension
+      # dlopens and exposes its FFI symbols. We test the cp312-abi3 wheel because
+      # it loads on the host's Python (3.12+); the cp310/cp311 wheels share the
+      # identical source and build, so one passing dlopen validates the kernel.
+      - name: Set up Python 3.12 for the dlopen check
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Smoke test — eigh_cuda dlopens (no deps, no GPU)
+        run: |
+          python -m venv /tmp/cudasmoke
+          /tmp/cudasmoke/bin/pip install --upgrade pip
+          /tmp/cudasmoke/bin/pip install \
+            nvidia-cuda-runtime-cu12 nvidia-cusolver-cu12 nvidia-cublas-cu12 \
+            nvidia-cusparse-cu12 nvidia-cuda-nvrtc-cu12 nvidia-nvjitlink-cu12
+          abi3=$(ls wheelhouse/*cp312-abi3*.whl 2>/dev/null | head -1)
+          if [ -z "$abi3" ]; then echo "::error::no cp312-abi3 wheel to dlopen-test"; exit 1; fi
+          echo "dlopen-testing $abi3"
+          /tmp/cudasmoke/bin/pip install --no-deps --force-reinstall "$abi3"
+          /tmp/cudasmoke/bin/python scripts/test_cuda_dlopen.py
 
       - uses: actions/upload-artifact@v4
         with:

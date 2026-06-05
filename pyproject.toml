@@ -15,7 +15,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh"
-version = "0.3.9"
+version = "0.3.10"
 description = "Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
 readme = "README.md"
 requires-python = ">=3.10"
