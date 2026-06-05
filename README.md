@@ -34,8 +34,10 @@ Python 3.10–3.13, JAX 0.5+.
 
 ### GPU - Build from source (Recommended)
 
+Make sure first that you have JAX installed that runs fine on your GPU.
+
 Build from source for a `jaxlib` / CUDA / glibc combination the wheels don't
-cover. The main case is an environment pinned to **`jaxlib` 0.4.29** (the
+cover. The main case is an environment pinned to e.g., **`jaxlib` 0.4.29** (the
 prebuilt wheels require `jaxlib` ≥ 0.5 — the FFI binary ABI changed at 0.5, so a
 0.5 wheel can't run on 0.4.x and vice-versa). The source builds against
 **whatever `jaxlib` is in your env** (0.4.29 or 0.5–0.10+), CPU or GPU:
@@ -59,9 +61,7 @@ verification — are in [docs/TECHNICAL_NOTES.md](docs/TECHNICAL_NOTES.md).
 
 ### GPU (CUDA 12, Linux x86_64)
 
-You can try this and may get lucky if it happens that JAX and other libraries match. I strongly recommend to build from source (see GPU - Build from source).
-
-Pick the package matching your cluster's CUDA version:
+You can try this and may get lucky if it happens that JAX and other libraries match. I strongly recommend to build from source (see GPU - Build from source). Pick the package matching your cluster's CUDA version:
 
 ```bash
 pip install eigh-cuda120   # CUDA 12.0+ (works through 12.8+); the safe default
