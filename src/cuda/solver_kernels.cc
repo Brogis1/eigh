@@ -45,13 +45,13 @@ namespace ffi = ::xla::ffi;
 
 #define SOLVER_DISPATCH_IMPL(impl, ...)                 \
     switch (dtype) {                                    \
-        case ffi::F32:                                  \
+        case eigh::dt::F32:                             \
             return impl<float>(__VA_ARGS__);            \
-        case ffi::F64:                                  \
+        case eigh::dt::F64:                             \
             return impl<double>(__VA_ARGS__);           \
-        case ffi::C64:                                  \
+        case eigh::dt::C64:                             \
             return impl<cuComplex>(__VA_ARGS__);        \
-        case ffi::C128:                                 \
+        case eigh::dt::C128:                            \
             return impl<cuDoubleComplex>(__VA_ARGS__);  \
         default:                                        \
             break;                                      \
@@ -65,7 +65,7 @@ ffi::Error SygvdImpl(
         ffi::AnyBuffer a, ffi::AnyBuffer b,
         ffi::Result<ffi::AnyBuffer> a_out, ffi::Result<ffi::AnyBuffer> b_out,
         ffi::Result<ffi::AnyBuffer> eigenvalues,
-        ffi::Result<ffi::Buffer<ffi::S32>> info,
+        ffi::Result<ffi::Buffer<eigh::dt::S32>> info,
         int itype_int, bool lower)
 {
     int n = MaybeCastNoOverflow<int>(a_cols);
@@ -74,21 +74,21 @@ ffi::Error SygvdImpl(
     cusolverDnCreate(&handle);
     cusolverDnSetStream(handle, stream);
 
-    auto *a_data = static_cast<T*>(a.untyped_data());
-    auto *b_data = static_cast<T*>(b.untyped_data());
-    auto *a_out_data = static_cast<T*>(a_out->untyped_data());
-    auto *b_out_data = static_cast<T*>(b_out->untyped_data());
+    auto *a_data = static_cast<T*>(eigh::FfiUntypedData(a));
+    auto *b_data = static_cast<T*>(eigh::FfiUntypedData(b));
+    auto *a_out_data = static_cast<T*>(eigh::FfiUntypedData(*a_out));
+    auto *b_out_data = static_cast<T*>(eigh::FfiUntypedData(*b_out));
     auto *eigenvalues_data =
-        static_cast<typename solver::RealType<T>::value*>(eigenvalues->untyped_data());
-    auto *info_data = info->typed_data();
+        static_cast<typename solver::RealType<T>::value*>(eigh::FfiUntypedData(*eigenvalues));
+    auto *info_data = eigh::FfiTypedData(*info);
 
     if (a_data != a_out_data) {
-        cudaMemcpyAsync(a_out_data, a_data, a.size_bytes(),
+        cudaMemcpyAsync(a_out_data, a_data, eigh::FfiSizeBytes(a),
                         cudaMemcpyDeviceToDevice, stream);
     }
 
     if (b_data != b_out_data) {
-        cudaMemcpyAsync(b_out_data, b_data, b.size_bytes(),
+        cudaMemcpyAsync(b_out_data, b_data, eigh::FfiSizeBytes(b),
                         cudaMemcpyDeviceToDevice, stream);
     }
 
@@ -119,25 +119,25 @@ ffi::Error SygvdDispatch(
     ffi::AnyBuffer a, ffi::AnyBuffer b,
     ffi::Result<ffi::AnyBuffer> a_out, ffi::Result<ffi::AnyBuffer> b_out,
     ffi::Result<ffi::AnyBuffer> eigenvalues,
-    ffi::Result<ffi::Buffer<ffi::S32>> info,
+    ffi::Result<ffi::Buffer<eigh::dt::S32>> info,
     int itype, bool lower)
 {
-    auto dtype = a.element_type();
-    if (dtype != a_out->element_type() || dtype != b.element_type()) {
-        return ffi::Error::InvalidArgument(
+    auto dtype = eigh::FfiElementType(a);
+    if (dtype != eigh::FfiElementType(*a_out) || dtype != eigh::FfiElementType(b)) {
+        return eigh::FfiInvalidArgument(
             "The inputs and outputs to sygvd must have the same element type");
     }
 
-    auto [batch_count, a_rows, a_cols] = SplitBatch2D(a.dimensions());
+    auto [batch_count, a_rows, a_cols] = SplitBatch2D(eigh::FfiDimensions(a));
     if (a_rows != a_cols) {
-        return ffi::Error::InvalidArgument(
+        return eigh::FfiInvalidArgument(
             "The input matrix to sygvd must be square.");
     }
 
     SOLVER_DISPATCH_IMPL(SygvdImpl, batch_count, a_cols, stream, scratch,
                          a, b, a_out, b_out, eigenvalues, info, itype, lower);
 
-    return ffi::Error::InvalidArgument("Unsupported dtype in sygvd");
+    return eigh::FfiInvalidArgument("Unsupported dtype in sygvd");
 }
 
 #undef SOLVER_DISPATCH_IMPL
@@ -152,7 +152,7 @@ XLA_FFI_DEFINE_HANDLER_SYMBOL(
       .Ret<ffi::AnyBuffer>(/*a_out*/)
       .Ret<ffi::AnyBuffer>(/*b_out*/)
       .Ret<ffi::AnyBuffer>(/*eigenvalues*/)
-      .Ret<ffi::Buffer<ffi::S32>>(/*info*/)
+      .Ret<ffi::Buffer<eigh::dt::S32>>(/*info*/)
       .Attr<int>("itype")
       .Attr<bool>("lower")
 );

@@ -63,34 +63,67 @@ auto-detects the GPU backend.
 
 ### GPU (build from source on the cluster)
 
-If you need a CUDA version other than the prebuilt `eigh-cuda120` / `eigh-cuda128`
-targets, a custom toolchain, or a platform with no prebuilt wheel, build from
-source on the GPU machine:
+Build from source when you need a CUDA version not covered by the prebuilt
+`eigh-cuda120` / `eigh-cuda128` wheels, a glibc older than the wheels target, or
+a **specific (often older) `jaxlib`** your cluster is pinned to. A source build
+compiles the FFI handler against **your** environment's `jaxlib`, so the result
+matches its ABI exactly. This is the most reliable path on HPC.
 
-There is no prebuilt GPU wheel — you compile one on the cluster against its CUDA
-12 toolkit. The key flag is **`--no-build-isolation`**: it builds the FFI handler
-against the `jaxlib` already in your environment (your cluster's CUDA `jaxlib`)
-instead of pip pulling an isolated CPU `jaxlib` into a sandbox.
+**Why source, not the wheel?** The XLA FFI binary ABI is forward-compatible
+only. A prebuilt wheel (built against jaxlib 0.5) runs on jaxlib ≥ 0.5 but fails
+on older jaxlib with `Unexpected XLA_FFI_Handler_Register size`. Building from
+source against the cluster's own jaxlib sidesteps this. eigh supports source
+builds against **jaxlib 0.4.29 and 0.5 → 0.10+** (the FFI accessor and
+registration differences are bridged internally).
+
+**Prerequisites**
 
 ```bash
-# 0. On the cluster, load CUDA 12 and put nvcc on PATH (module load cuda/12.x ...)
-nvcc --version          # confirm CUDA 12.x is visible
-
-# 1. Install a CUDA-12 JAX matching the cluster (this provides the CUDA jaxlib)
-pip install "jax[cuda12]"        # or jax[cuda12-local] to use the system CUDA
-
-# 2. Build eigh FROM SOURCE against that jaxlib, no build isolation
-pip install --no-build-isolation "scikit-build-core>=0.8" "nanobind>=1.0.0" cmake ninja
-pip install --no-build-isolation --no-binary eigh eigh
-#   ^ --no-binary forces a source build; CMake auto-detects nvcc and compiles
-#     the cuSOLVER kernel (look for "CUDA support enabled" in the build log).
-
-# Or from a git checkout:
-#   pip install --no-build-isolation .
-
-# 3. Verify the GPU backend loaded (no "CUDA backend not available" warning)
-python -c "import eigh._core as c; print('cuda:', c._cuda_available)"
+# CUDA toolkit with nvcc on PATH (module load cuda/12.x, or a local install)
+nvcc --version          # confirm nvcc is visible
+# A working CUDA jaxlib already installed in your env, e.g. the cluster's:
+python -c "import jaxlib; print(jaxlib.__version__)"   # e.g. 0.4.29+cuda12.cudnn91
 ```
+
+**Build** — the key flags are **`--no-build-isolation`** (compile against the
+jaxlib already in your env, not an isolated sandbox) and, when your jaxlib is
+pinned, **`--no-deps`** (do NOT let pip pull `jax>=0.5` and clobber your working
+CUDA jax):
+
+```bash
+# 1. Build-backend deps in the SAME env (needed because of --no-build-isolation)
+pip install "scikit-build-core>=0.8" "nanobind>=1.0.0" cmake ninja
+
+# 2. Build eigh from a checkout, against the env's jaxlib, without touching jax
+git clone https://github.com/Brogis1/eigh && cd eigh
+pip install . --no-build-isolation --no-deps
+#   - --no-build-isolation : compile against the installed (CUDA) jaxlib
+#   - --no-deps            : keep your pinned jax/jaxlib (critical on e.g. 0.4.29)
+#   CMake auto-detects nvcc and compiles the cuSOLVER kernel; look for
+#   "CUDA support enabled" in the build log. If it says "CUDA not found",
+#   nvcc is not on PATH.
+```
+
+If `nvcc` lives outside `PATH`, point CMake at it:
+`pip install . --no-build-isolation --no-deps -C cmake.define.CMAKE_CUDA_COMPILER=/path/to/nvcc`.
+
+**Verify on the GPU**
+
+```bash
+python - <<'PY'
+import jax, jax.numpy as jnp
+jax.config.update("jax_enable_x64", True)
+print("jax", jax.__version__, "| devices:", jax.devices())   # expect [cuda(id=0)]
+from eigh import eigh_gen
+A = jnp.array([[2.0, 0.3], [0.3, 1.0]]); B = jnp.eye(2)
+w, v = eigh_gen(A, B)
+print("eigenvalues:", w, "| on:", w.devices())               # runs on the GPU
+PY
+```
+
+> Verified working on a cluster with **jaxlib 0.4.29+cuda12, CUDA 12.0, driver
+> 525, RHEL 8 (glibc 2.28)** — exactly the kind of pinned environment the
+> prebuilt wheels can't target.
 
 If the build prints `CUDA not found - GPU support will be disabled`, `nvcc`
 wasn't on `PATH` at build time — fix the CUDA module load and rebuild. See the
@@ -208,7 +241,8 @@ GPU FFI under `platform="gpu"`.
 | Prebuilt wheels | **`eigh-cuda120`** (CUDA 12.0, glibc 2.17) and **`eigh-cuda128`** (CUDA 12.8, glibc 2.34) | `eigh-cuda120` is forward-compatible to 12.8+ and the safer default; `eigh-cuda128` targets modern toolchains. Any CUDA 12.x toolkit can also build from source. |
 | cuSOLVER API | CUDA 8+ | The `*sygvd`/`*hegvd` dense API is long-stable, so there is no upper CUDA-12 bound from the API surface. |
 | Compute capability | nvcc default for the toolkit | No explicit `-arch` is set; PTX JITs forward to newer GPUs. Set `CMAKE_CUDA_ARCHITECTURES` to target a specific SM. |
-| FFI ABI across JAX | Same `MAJOR == 0` stability as CPU | The GPU handler is forward-compatible across jax 0.5→0.9 just like the CPU one. |
+| FFI ABI across JAX | Same `MAJOR == 0` stability as CPU | The GPU handler is forward-compatible across jax 0.5→0.10 just like the CPU one. |
+| Source-build jaxlib range | **jaxlib 0.4.29 and 0.5 → 0.10+** | Building from source works against the cluster's own jaxlib (incl. the old 0.4.29 some CUDA-12.0 clusters pin); the FFI accessor/registration differences are bridged internally. Prebuilt wheels still require jaxlib ≥ 0.5 (forward-only binary ABI). |
 
 **Where the GPU path breaks / what to know:**
 - **Prebuilt GPU wheels:** `pip install eigh-cuda120` (CUDA 12.0+, the safer

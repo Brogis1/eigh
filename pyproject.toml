@@ -41,10 +41,17 @@ classifiers = [
 ]
 keywords = ["jax", "eigenvalue", "linear-algebra", "gpu", "cuda", "autodiff"]
 dependencies = [
-    # Floor at 0.5: the FFI custom-call API used by the compiled handler did
-    # not stabilize until the 0.5 series. 0.4.x used the pre-FFI custom-call
-    # registration and is intentionally unsupported. No upper bound: verified
-    # working through jax 0.9.2.
+    # Runtime floor for the PREBUILT WHEEL is 0.5. The wheel's compiled FFI
+    # handler is built against jaxlib 0.5, and the XLA FFI ABI is only
+    # forward-compatible (a 0.5-built handler loads on 0.5..0.10+ but FAILS on
+    # jaxlib <= ~0.4.33 with "Unexpected XLA_FFI_Handler_Register size"). So the
+    # installed wheel requires jaxlib >= 0.5.
+    #
+    # The SOURCE, however, also builds against jaxlib 0.4.29 (its FFI buffer
+    # accessors are bridged in include/ffi_helpers.h, and registration is bridged
+    # in _core.py). To use eigh on jaxlib 0.4.29, build from source against that
+    # jaxlib (e.g. `pip install --no-build-isolation .`); the resulting .so has a
+    # matching 0.4.29 ABI and runs. Verified working jax 0.4.29 and 0.5 -> 0.10.
     "jax>=0.5.0",
     "jaxlib>=0.5.0",
     "numpy>=1.20.0",

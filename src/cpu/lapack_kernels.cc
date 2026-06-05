@@ -155,9 +155,9 @@ namespace eigh {
 
 template <ffi::DataType dtype>
 void CopyIfDiffBuffer(ffi::Buffer<dtype> x, ffi::ResultBuffer<dtype> x_out) {
-  if (x.typed_data() != x_out->typed_data()) {
-    const auto x_size = x.element_count();
-    std::copy_n(x.typed_data(), x_size, x_out->typed_data());
+  if (eigh::FfiTypedData(x) != eigh::FfiTypedData(*x_out)) {
+    const auto x_size = eigh::FfiElementCount(x);
+    std::copy_n(eigh::FfiTypedData(x), x_size, eigh::FfiTypedData(*x_out));
   }
 }
 
@@ -169,13 +169,13 @@ ffi::Error EighReal<dtype>::Kernel(
     ffi::ResultBuffer<LapackIntDtype> info,
     int itype, eig::JobZ jobz, MatrixParams::UpLo uplo)
 {
-    auto [batch_count, a_rows, a_cols] = SplitBatch2D(a.dimensions());
+    auto [batch_count, a_rows, a_cols] = SplitBatch2D(eigh::FfiDimensions(a));
     assert(a_rows == a_cols);
 
-    auto* a_out_data = a_out->typed_data();
-    auto* b_out_data = b_out->typed_data();
-    auto* eigenvalues_data = eigenvalues->typed_data();
-    auto* info_data = info->typed_data();
+    auto* a_out_data = eigh::FfiTypedData(*a_out);
+    auto* b_out_data = eigh::FfiTypedData(*b_out);
+    auto* eigenvalues_data = eigh::FfiTypedData(*eigenvalues);
+    auto* info_data = eigh::FfiTypedData(*info);
 
     CopyIfDiffBuffer(a, a_out);
     CopyIfDiffBuffer(b, b_out);
@@ -210,13 +210,13 @@ ffi::Error EighComplex<dtype>::Kernel(
     ffi::ResultBuffer<LapackIntDtype> info,
     int itype, eig::JobZ jobz, MatrixParams::UpLo uplo)
 {
-    auto [batch_count, a_rows, a_cols] = SplitBatch2D(a.dimensions());
+    auto [batch_count, a_rows, a_cols] = SplitBatch2D(eigh::FfiDimensions(a));
     assert(a_rows == a_cols);
 
-    auto* a_out_data = a_out->typed_data();
-    auto* b_out_data = b_out->typed_data();
-    auto* eigenvalues_data = eigenvalues->typed_data();
-    auto* info_data = info->typed_data();
+    auto* a_out_data = eigh::FfiTypedData(*a_out);
+    auto* b_out_data = eigh::FfiTypedData(*b_out);
+    auto* eigenvalues_data = eigh::FfiTypedData(*eigenvalues);
+    auto* info_data = eigh::FfiTypedData(*info);
 
     CopyIfDiffBuffer(a, a_out);
     CopyIfDiffBuffer(b, b_out);
