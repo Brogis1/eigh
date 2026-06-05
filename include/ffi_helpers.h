@@ -32,10 +32,24 @@ namespace eigh {
 // ---------------------------------------------------------------------------
 namespace ffi_compat {
 
+// Detect the jaxlib >= 0.5 buffer API by the presence of `untyped_data()`. This
+// is a NON-template method on both the typed `Buffer<dtype>` and `AnyBuffer` in
+// 0.5+, and absent on the 0.4.29 plain-struct buffers. We key the modern/old
+// branch on this rather than on `typed_data()`, because on `AnyBuffer`
+// `typed_data` is a TEMPLATE method — `decltype(buf.typed_data())` fails to
+// compile (needs explicit <T>), which would wrongly select the old-API branch.
 template <typename T, typename = void>
-struct has_typed_data : std::false_type {};
+struct has_untyped_data : std::false_type {};
 template <typename T>
-struct has_typed_data<
+struct has_untyped_data<
+    T, std::void_t<decltype(std::declval<T&>().untyped_data())>>
+    : std::true_type {};
+
+// Detect a non-template `typed_data()` (the typed Buffer<dtype> in 0.5+).
+template <typename T, typename = void>
+struct has_typed_data_method : std::false_type {};
+template <typename T>
+struct has_typed_data_method<
     T, std::void_t<decltype(std::declval<T&>().typed_data())>>
     : std::true_type {};
 
@@ -48,10 +62,12 @@ struct has_dimensions_method<
 
 }  // namespace ffi_compat
 
-// Typed data pointer: buf.typed_data() (>=0.5) or buf.data (0.4.29).
+// Typed data pointer. On 0.5+ the typed Buffer<dtype> exposes a non-template
+// typed_data(); on 0.4.29 it is the `.data` member. (Only ever called on the
+// typed Buffer, not AnyBuffer.)
 template <typename Buf>
 inline auto FfiTypedData(Buf& buf) {
-    if constexpr (ffi_compat::has_typed_data<Buf>::value) {
+    if constexpr (ffi_compat::has_typed_data_method<Buf>::value) {
         return buf.typed_data();
     } else {
         return buf.data;
@@ -61,7 +77,7 @@ inline auto FfiTypedData(Buf& buf) {
 // Untyped (void*) data pointer: buf.untyped_data() (>=0.5) or (void*)buf.data.
 template <typename Buf>
 inline void* FfiUntypedData(Buf& buf) {
-    if constexpr (ffi_compat::has_typed_data<Buf>::value) {
+    if constexpr (ffi_compat::has_untyped_data<Buf>::value) {
         return buf.untyped_data();
     } else {
         return static_cast<void*>(buf.data);
