@@ -2,6 +2,11 @@ name: Build and publish wheels
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the built wheels to PyPI (requires a bumped version; PyPI rejects re-uploads)"
+        type: boolean
+        default: false
   push:
     tags:
       - 'v*'
@@ -59,7 +64,12 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # Publish on a version tag push OR a manual run with publish=true (deploy to
+    # PyPI from the Actions "Run workflow" button without tagging — but bump the
+    # version first; PyPI rejects re-uploads).
+    if: >-
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish)
     steps:
       # Only the CPU `eigh` artifacts from THIS workflow run. download-artifact
       # is scoped to the current run, so the eigh-cuda12 workflow (a separate

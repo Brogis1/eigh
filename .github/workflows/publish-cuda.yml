@@ -15,6 +15,11 @@ name: Build and publish CUDA wheels (eigh-cuda120 / eigh-cuda128)
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the built wheels to PyPI (requires a bumped version; PyPI rejects re-uploads)"
+        type: boolean
+        default: false
   push:
     tags:
       - 'v*'
@@ -156,7 +161,14 @@ jobs:
     # exactly why an earlier release published nothing despite one variant
     # building fine. always() lets surviving legs run even if a sibling failed;
     # the download then no-ops for any variant whose artifact is absent.
-    if: always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    #
+    # Publishes on a version tag push OR a manual run with publish=true (so you
+    # can deploy to PyPI from the Actions "Run workflow" button without tagging —
+    # but the pyproject version MUST be bumped, since PyPI rejects re-uploads).
+    if: >-
+      always() &&
+      ((github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+       (github.event_name == 'workflow_dispatch' && inputs.publish))
     strategy:
       fail-fast: false
       matrix:
