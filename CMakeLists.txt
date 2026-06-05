@@ -180,16 +180,23 @@ if(CMAKE_CUDA_COMPILER)
         CUDA_SEPARABLE_COMPILATION ON
     )
 
-    # When the eigh-cuda12 wheel depends on NVIDIA's pip CUDA wheels, the CUDA
+    # When the eigh-cudaXXX wheel depends on NVIDIA's pip CUDA wheels, the CUDA
     # runtime libraries live in site-packages/nvidia/*/lib, NOT next to this .so.
     # The module installs to site-packages/eigh/, so add RPATH entries that climb
-    # to site-packages (../) and into each nvidia/<lib>/lib directory. Without
-    # this the loader cannot find libcusolver/libcublas/libcudart at import time.
+    # to site-packages (../) and into each nvidia/<lib>/lib directory.
+    #
+    # CRITICAL: this must cover EVERY library in the .so's NEEDED list, including
+    # the ones cuSOLVER pulls in TRANSITIVELY. The .so links cudart/cusolver/
+    # cublas directly, but cusolver also needs cublasLt, cusparse, nvJitLink (and
+    # nvrtc). Missing any one -> `ImportError: libXXX.so.N: cannot open shared
+    # object file` at import on a real machine. Verify after a build with:
+    #   readelf -d eigh_cuda*.so | grep NEEDED   # every libcu*/libnv* must have
+    #                                            # a matching RPATH dir below.
     # ${ORIGIN} is escaped so it is written literally into the ELF RPATH.
     if(EIGH_REQUIRE_CUDA)
         set_target_properties(eigh_cuda PROPERTIES
             BUILD_RPATH_USE_ORIGIN ON
-            INSTALL_RPATH "\$ORIGIN/../nvidia/cuda_runtime/lib;\$ORIGIN/../nvidia/cusolver/lib;\$ORIGIN/../nvidia/cublas/lib"
+            INSTALL_RPATH "\$ORIGIN/../nvidia/cuda_runtime/lib;\$ORIGIN/../nvidia/cusolver/lib;\$ORIGIN/../nvidia/cublas/lib;\$ORIGIN/../nvidia/cusparse/lib;\$ORIGIN/../nvidia/cuda_nvrtc/lib;\$ORIGIN/../nvidia/nvjitlink/lib"
         )
     endif()
 
