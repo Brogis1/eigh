@@ -1,19 +1,21 @@
 [build-system]
+# jaxlib is intentionally NOT a build requirement here. It hard-depends on scipy,
+# whose install can fail (no matching wheel -> source build without OpenBLAS) on
+# some build images. We need only jaxlib's XLA FFI *headers* at build time, so we
+# install jaxlib with --no-deps in cibuildwheel's before-build and build WITHOUT
+# isolation (see [tool.cibuildwheel]) so that install is visible to the backend.
+# The XLA FFI C ABI is stable within XLA_FFI_API_MAJOR == 0, so building against
+# the oldest jaxlib (0.5) keeps the handler forward-compatible (verified to 0.9+).
 requires = [
     "scikit-build-core>=0.8",
     "nanobind>=1.0.0",
-    # Build against the OLDEST supported jaxlib so the compiled FFI handler
-    # stays forward-compatible with every newer jaxlib (the XLA FFI C ABI is
-    # stable within XLA_FFI_API_MAJOR == 0, verified on jax 0.5.3 -> 0.9.2).
-    # Building against the latest jaxlib instead would break loading on 0.5/0.6.
-    "jaxlib==0.5.*",
     "numpy>=1.20.0",
 ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh"
-version = "0.3.7"
+version = "0.3.8"
 description = "Differentiable eigenvalue decomposition with JAX (CPU/GPU)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -86,11 +88,13 @@ build-verbosity = 1
 build = "cp310-* cp311-* cp312-*"
 # Skip PyPy, Python 3.8/3.9 (jaxlib compatibility), and musllinux (Alpine)
 skip = "pp* cp38-* cp39-* *-musllinux_*"
-# Build the FFI handler against the OLDEST supported jaxlib so the XLA FFI ABI
-# stays forward-compatible with every newer jaxlib (verified jax 0.5.3 -> 0.9.2).
-# --no-deps: we only need jaxlib's bundled XLA FFI headers to compile against;
-# its deps (scipy) can trigger a slow/fragile source build on some images.
-before-build = "pip install --no-deps 'jaxlib==0.5.*'"
+# Build WITHOUT isolation so the jaxlib installed in before-build (for its FFI
+# headers) is visible to the backend, instead of pip re-resolving
+# build-system.requires (which would pull jaxlib's scipy dep and can fail).
+# before-build installs ALL build deps; jaxlib goes in --no-deps so the oldest
+# jaxlib's headers are used (forward-compatible) and scipy is never pulled.
+build-frontend = "build; args: --no-isolation"
+before-build = "pip install 'scikit-build-core>=0.8' 'nanobind>=1.0.0' 'numpy>=1.20.0' cmake ninja && pip install --no-deps 'jaxlib==0.5.*'"
 # Verify the compiled extension actually loads in the installed wheel (catches
 # the abi3 floor trap and a Linux wheel missing its bundled BLAS/LAPACK). The
 # macOS runner is arm64 and Linux x86_64 runs natively, so every built wheel can

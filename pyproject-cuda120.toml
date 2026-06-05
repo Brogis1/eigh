@@ -14,17 +14,21 @@
 # ============================================================================
 
 [build-system]
+# NOTE: jaxlib is intentionally NOT here. jaxlib hard-depends on scipy, which has
+# no manylinux2014 wheel for recent versions and then fails to source-build (no
+# OpenBLAS via pkg-config) inside the CUDA 12.0 build image. We only need
+# jaxlib's XLA FFI *headers*, so we install it with --no-deps in before-build and
+# build WITHOUT isolation (build-frontend below) so that install is visible.
 requires = [
     "scikit-build-core>=0.8",
     "nanobind>=1.0.0",
-    "jaxlib==0.5.*",
     "numpy>=1.20.0",
 ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda120"
-version = "0.3.7"
+version = "0.3.8"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12.0 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -91,10 +95,15 @@ EIGH_REQUIRE_CUDA = "ON"
 build-verbosity = 1
 build = "cp310-* cp311-* cp312-*"
 skip = "pp* cp38-* cp39-* *-musllinux_*"
-# --no-deps: install jaxlib only for its bundled XLA FFI headers; pulling its
-# deps drags in scipy, which builds from source (no manylinux2014 wheel) and
-# fails on OpenBLAS in this image. Headers are in the jaxlib wheel itself.
-before-build = "pip install --no-deps 'jaxlib==0.5.*'"
+# Build WITHOUT isolation so the jaxlib installed in before-build (for its FFI
+# headers only) is visible to the build backend. With isolation on, pip would
+# re-resolve build-system.requires in a fresh env; jaxlib there would drag in
+# scipy and fail (see build-system note above). No-isolation means before-build
+# must install ALL build deps, which it does.
+build-frontend = "build; args: --no-isolation"
+# Install the build backend + jaxlib's FFI headers (jaxlib --no-deps so scipy is
+# never pulled). numpy is needed for `import jaxlib` (header path detection).
+before-build = "pip install 'scikit-build-core>=0.8' 'nanobind>=1.0.0' 'numpy>=1.20.0' cmake ninja && pip install --no-deps 'jaxlib==0.5.*'"
 config-settings."cmake.define.CMAKE_CUDA_COMPILER" = "/usr/local/cuda/bin/nvcc"
 test-command = "python -c \"from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations'); print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))\""
 

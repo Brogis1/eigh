@@ -16,17 +16,19 @@
 # ============================================================================
 
 [build-system]
+# jaxlib is intentionally NOT here — it hard-depends on scipy, which can fail to
+# install/source-build in the build image. We need only jaxlib's XLA FFI headers,
+# installed with --no-deps in before-build with build isolation OFF (see below).
 requires = [
     "scikit-build-core>=0.8",
     "nanobind>=1.0.0",
-    "jaxlib==0.5.*",
     "numpy>=1.20.0",
 ]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "eigh-cuda128"
-version = "0.3.7"
+version = "0.3.8"
 description = "Differentiable eigenvalue decomposition with JAX — CUDA 12.8 (GPU) build"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -93,10 +95,12 @@ EIGH_REQUIRE_CUDA = "ON"
 build-verbosity = 1
 build = "cp310-* cp311-* cp312-*"
 skip = "pp* cp38-* cp39-* *-musllinux_*"
-# --no-deps: install jaxlib only for its bundled XLA FFI headers; pulling its
-# deps drags in scipy, which can build from source and fail on OpenBLAS in the
-# build image. Headers are in the jaxlib wheel itself.
-before-build = "pip install --no-deps 'jaxlib==0.5.*'"
+# Build WITHOUT isolation so the jaxlib installed in before-build (headers only)
+# is visible to the backend, instead of pip re-resolving build-system.requires
+# (which would drag in jaxlib's scipy dep and can fail). before-build installs
+# ALL build deps; jaxlib goes in with --no-deps so scipy is never pulled.
+build-frontend = "build; args: --no-isolation"
+before-build = "pip install 'scikit-build-core>=0.8' 'nanobind>=1.0.0' 'numpy>=1.20.0' cmake ninja && pip install --no-deps 'jaxlib==0.5.*'"
 config-settings."cmake.define.CMAKE_CUDA_COMPILER" = "/usr/local/cuda/bin/nvcc"
 test-command = "python -c \"from eigh import eigh_cuda; assert hasattr(eigh_cuda, 'registrations'); print('eigh_cuda dlopen OK:', list(eigh_cuda.registrations().keys()))\""
 
