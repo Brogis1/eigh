@@ -37,10 +37,17 @@ jobs:
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel cmake ninja
+          # Build backend deps must be present because we install with
+          # --no-build-isolation (jaxlib is not in build-system.requires).
+          pip install "scikit-build-core>=0.8" "nanobind>=1.0.0"
           pip install "jax[cpu]" jaxtyping numpy scipy pytest
 
       - name: Build and install package
-        run: pip install -e . -v
+        # --no-build-isolation: jaxlib is no longer in build-system.requires (it
+        # pulls scipy, which can fail to build on some images). The build needs
+        # jaxlib's FFI headers, which are provided by the jax[cpu] install above;
+        # without --no-build-isolation the isolated build env wouldn't see it.
+        run: pip install -e . -v --no-build-isolation
 
       - name: Run JAX eigensolver tests
         run: pytest tests/test_jax_eigensolvers.py -v --tb=short

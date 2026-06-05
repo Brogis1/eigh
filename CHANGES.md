@@ -24,10 +24,13 @@ As long as both sides agree on the name (which they now do), everything works. T
 
 # To Apply
 
-You need to rebuild the package since the C++ files changed:
+You need to rebuild the package since the C++ files changed (jaxlib provides the
+build-time FFI headers and is not in build-system.requires, so build without
+isolation):
 
 ```bash
-pip install -e .
+pip install "jax[cpu]" scikit-build-core nanobind cmake ninja
+pip install -e . --no-build-isolation
 ```
 
 After rebuilding, both JAX's standard `eigh` and this package's `eigh` can coexist without conflicts.
