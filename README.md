@@ -6,8 +6,13 @@
 
 Standalone implementation of differentiable eigenvalue decomposition with CPU (LAPACK) and GPU (cuSOLVER) backends. Extracted from [pyscfad](https://github.com/fishjojo/pyscfad).
 
-Wheels on PyPI: https://pypi.org/project/eigh/ — Linux (manylinux_2_28, x86_64) and macOS (arm64 / Apple Silicon), Python 3.10–3.13, compatible with **JAX 0.5 through 0.9+** (single forward-compatible binary). macOS x86_64 (Intel) is not shipped: JAX has no `jaxlib` ≥0.5 for Intel Macs. GPU path (cuSOLVER) is tested locally; CI runs CPU tests only. See [Compatibility](#compatibility) for the full support matrix.
+CPU and GPU wheels on PyPI for Linux and macOS (Apple Silicon), Python 3.10–3.13,
+JAX 0.5–0.10+. See [Installation](#installation--quick-start) and
+[Compatibility](#compatibility).
 
+> ### New
+> - Core code rewritten to be able to run on older cluster with JAX 0.4.XX for instance (most likely on GPU clusters).
+> - Builds for CUDA but I recommend just building from source, fast and easy with this package (it will work for your specific JAX version).
 
 ## Features
 - **Generalized Problems**: `A @ V = B @ V @ diag(W)`, etc.
@@ -18,117 +23,55 @@ Wheels on PyPI: https://pypi.org/project/eigh/ — Linux (manylinux_2_28, x86_64
 
 ## Installation & Quick Start
 
-### CPU (from PyPI)
+### CPU
 
 ```bash
 pip install eigh
 ```
 
-This pulls a prebuilt **CPU-only** wheel (see [Compatibility](#compatibility)).
-`pip install eigh` always prefers the matching wheel, so it will **not** build a
-GPU extension even on a GPU node.
+Prebuilt **CPU-only** wheels — Linux (x86_64) and macOS (Apple Silicon),
+Python 3.10–3.13, JAX 0.5+.
 
-### GPU (prebuilt wheels)
+### GPU - Build from source (Recommended)
 
-GPU builds ship as separate package names (**same repository, same `import
-eigh`**), one per CUDA build target. Pick by your cluster's CUDA version:
-
-```bash
-# Older CUDA clusters (CUDA 12.0+). Forward-compatible: also runs on 12.8+.
-# Widest reach (glibc 2.17). This is the right default if unsure.
-pip install eigh-cuda120
-
-# Modern CUDA clusters (CUDA 12.8+). Newer toolkit/glibc (2.34, RHEL 9+).
-pip install eigh-cuda128
-```
-
-Each pulls a Linux x86_64 wheel with the cuSOLVER kernel compiled in, plus the
-matching NVIDIA CUDA 12 runtime libraries and a CUDA-12 JAX. `import eigh` then
-auto-detects the GPU backend.
-
-| Package | Built against | Runs on CUDA | glibc | Pick when |
-| --- | --- | --- | --- | --- |
-| `eigh-cuda120` | CUDA 12.0 | **12.0 – 12.8+** | 2.17 | older clusters, or unsure (max compatibility) |
-| `eigh-cuda128` | CUDA 12.8 | **12.8+** | 2.34 | modern clusters wanting the newer toolchain |
-
-> **Why separate packages?** A single normal PyPI package cannot serve a small
-> CPU wheel to CPU users *and* GPU wheels to GPU users (PyPI wheel-variants are
-> not GA), and one GPU wheel can only target one CUDA version. So CPU users
-> `pip install eigh`; GPU users pick `eigh-cuda120` / `eigh-cuda128`. All are
-> built from this same repo — this mirrors `jaxlib` vs `jax-cuda12-plugin`.
->
-> The GPU wheels are built in CI but **functionally tested only on real GPU
-> hardware** before each release (CI has no GPU). If you rely on one, sanity
-> check on your own device.
-
-### GPU (build from source on the cluster)
-
-Build from source when you need a CUDA version not covered by the prebuilt
-`eigh-cuda120` / `eigh-cuda128` wheels, a glibc older than the wheels target, or
-a **specific (often older) `jaxlib`** your cluster is pinned to. A source build
-compiles the FFI handler against **your** environment's `jaxlib`, so the result
-matches its ABI exactly. This is the most reliable path on HPC.
-
-**Why source, not the wheel?** The XLA FFI binary ABI is forward-compatible
-only. A prebuilt wheel (built against jaxlib 0.5) runs on jaxlib ≥ 0.5 but fails
-on older jaxlib with `Unexpected XLA_FFI_Handler_Register size`. Building from
-source against the cluster's own jaxlib sidesteps this. eigh supports source
-builds against **jaxlib 0.4.29 and 0.5 → 0.10+** (the FFI accessor and
-registration differences are bridged internally).
-
-**Prerequisites**
+Build from source for a `jaxlib` / CUDA / glibc combination the wheels don't
+cover. The main case is an environment pinned to **`jaxlib` 0.4.29** (the
+prebuilt wheels require `jaxlib` ≥ 0.5 — the FFI binary ABI changed at 0.5, so a
+0.5 wheel can't run on 0.4.x and vice-versa). The source builds against
+**whatever `jaxlib` is in your env** (0.4.29 or 0.5–0.10+), CPU or GPU:
 
 ```bash
-# CUDA toolkit with nvcc on PATH (module load cuda/12.x, or a local install)
-nvcc --version          # confirm nvcc is visible
-# A working CUDA jaxlib already installed in your env, e.g. the cluster's:
-python -c "import jaxlib; print(jaxlib.__version__)"   # e.g. 0.4.29+cuda12.cudnn91
-```
-
-**Build** — the key flags are **`--no-build-isolation`** (compile against the
-jaxlib already in your env, not an isolated sandbox) and, when your jaxlib is
-pinned, **`--no-deps`** (do NOT let pip pull `jax>=0.5` and clobber your working
-CUDA jax):
-
-```bash
-# 1. Build-backend deps in the SAME env (needed because of --no-build-isolation)
-pip install "scikit-build-core>=0.8" "nanobind>=1.0.0" cmake ninja
-
-# 2. Build eigh from a checkout, against the env's jaxlib, without touching jax
 git clone https://github.com/Brogis1/eigh && cd eigh
+pip install "scikit-build-core>=0.8" "nanobind>=1.0.0" cmake ninja
 pip install . --no-build-isolation --no-deps
-#   - --no-build-isolation : compile against the installed (CUDA) jaxlib
-#   - --no-deps            : keep your pinned jax/jaxlib (critical on e.g. 0.4.29)
-#   CMake auto-detects nvcc and compiles the cuSOLVER kernel; look for
-#   "CUDA support enabled" in the build log. If it says "CUDA not found",
-#   nvcc is not on PATH.
 ```
 
-If `nvcc` lives outside `PATH`, point CMake at it:
-`pip install . --no-build-isolation --no-deps -C cmake.define.CMAKE_CUDA_COMPILER=/path/to/nvcc`.
+- `--no-build-isolation` compiles against the `jaxlib` already in your env.
+- `--no-deps` keeps your pinned `jax`/`jaxlib` (essential on 0.4.29 — otherwise
+  pip would upgrade it to ≥0.5).
+- For **GPU**, have `nvcc` on `PATH` (`module load cuda/12.x`); look for
+  `CUDA support enabled` in the build log (`CUDA not found` ⇒ `nvcc` not on
+  `PATH`). Plain `jaxlib` (no CUDA) yields a CPU-only build.
 
-**Verify on the GPU**
+Full details and the *why* — FFI ABI, pinned-`jaxlib` clusters, nvcc paths, GPU
+verification — are in [docs/TECHNICAL_NOTES.md](docs/TECHNICAL_NOTES.md).
+
+
+### GPU (CUDA 12, Linux x86_64)
+
+You can try this and may get lucky if it happens that JAX and other libraries match. I strongly recommend to build from source (see GPU - Build from source).
+
+Pick the package matching your cluster's CUDA version:
 
 ```bash
-python - <<'PY'
-import jax, jax.numpy as jnp
-jax.config.update("jax_enable_x64", True)
-print("jax", jax.__version__, "| devices:", jax.devices())   # expect [cuda(id=0)]
-from eigh import eigh_gen
-A = jnp.array([[2.0, 0.3], [0.3, 1.0]]); B = jnp.eye(2)
-w, v = eigh_gen(A, B)
-print("eigenvalues:", w, "| on:", w.devices())               # runs on the GPU
-PY
+pip install eigh-cuda120   # CUDA 12.0+ (works through 12.8+); the safe default
+pip install eigh-cuda128   # CUDA 12.8+ (newer toolchain / glibc 2.34)
 ```
 
-> Verified working on a cluster with **jaxlib 0.4.29+cuda12, CUDA 12.0, driver
-> 525, RHEL 8 (glibc 2.28)** — exactly the kind of pinned environment the
-> prebuilt wheels can't target.
+Both bundle the cuSOLVER kernel + NVIDIA CUDA runtime libs; `import eigh`
+auto-detects the GPU. They are separate packages from this same repo — `import
+eigh` is identical. See [Compatibility](#compatibility).
 
-If the build prints `CUDA not found - GPU support will be disabled`, `nvcc`
-wasn't on `PATH` at build time — fix the CUDA module load and rebuild. See the
-[CUDA / GPU](#cuda--gpu) compatibility notes for version constraints (CUDA 12
-only).
 
 ### Usage Example
 ```python
@@ -171,7 +114,7 @@ Forward/backward scaling vs. matrix size, and gradient stability as eigenvalues 
 ## Degenerate Eigenvalues & Gradients
 Individual eigenvalue gradients are ill-defined for degenerate (repeated) eigenvalues. However, symmetric functions (like `sum`, `var`, `trace`) have stable gradients. The `deg_thresh` parameter (default `1e-9`) masks divisions by near-zero gaps to maintain stability.
 
-## JAX Eigensolvers (`src/jax/`)
+## JAX Eigensolvers
 A collection of differentiable generalized eigensolvers with different strategies for handling degenerate eigenvalues in reverse-mode gradients. Useful for training pipelines where degeneracies are common.
 
 **If you just want a working solver, use `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`** from [generalized_eigensolver_pyscfad.py](src/jax/generalized_eigensolver_pyscfad.py). They wrap the fast LAPACK/cuSOLVER kernels with a Lorentzian-broadened custom VJP, so gradients stay stable when eigenvalues are (nearly) degenerate.
@@ -205,71 +148,19 @@ The remaining solvers below are kept for benchmarking and for reproducing prior 
 
 ## Compatibility
 
-**Windows:** no prebuilt wheel. The pure-JAX solvers in [src/jax/](src/jax/) (e.g. `safe_generalized_eigh`, `subspace_generalized_eigh`, `stable_generalized_eigh`) work out-of-the-box — `pip install jax numpy scipy` and import directly from that module. The fast LAPACK/cuSOLVER-backed `eigh` / `eigh_gen` kernels (and therefore `stable_eigh_pyscfad` / `stable_eigh_gen_pyscfad`) require building from source against a local BLAS/LAPACK.
+- **Python:** 3.10–3.13.  **JAX:** 0.5 → 0.10+ for the prebuilt wheels; **jax 0.4.29
+  via source build** (its FFI ABI differs from 0.5+, so it needs its own build —
+  see [Build from source](#build-from-source)).
+- **CPU wheels:** Linux x86_64 (`manylinux_2_28`, bundled OpenBLAS) and macOS
+  arm64.
+- **GPU wheels:** Linux x86_64, CUDA 12 — `eigh-cuda120` (CUDA 12.0+, glibc 2.17)
+  and `eigh-cuda128` (CUDA 12.8+, glibc 2.34).
+- **Windows:** no compiled wheel — use the pure-JAX solvers in [src/jax/](src/jax/),
+  or build from source.
 
-### Python & JAX
-
-The compiled CPU (LAPACK) handler registers through the **XLA FFI C API**, whose
-ABI is stable within `XLA_FFI_API_MAJOR == 0`. A single wheel built against the
-oldest supported `jaxlib` therefore loads on every newer one — verified working
-on **jax/jaxlib 0.5.3, 0.6.2, 0.7.0, 0.7.2, 0.8.3, and 0.9.2** (`eigh_gen`
-correct and twice-differentiable on all of them).
-
-| Python | JAX 0.5 / 0.6 | JAX 0.7+ | Wheel shipped |
-| --- | --- | --- | --- |
-| 3.10 | ✅ | — *(jax 0.7 dropped 3.10)* | `cp310` |
-| 3.11 | ✅ | ✅ | `cp311` |
-| 3.12 | ✅ | ✅ | `cp312-abi3` |
-| 3.13+ | — | ✅ | `cp312-abi3` *(forward-compatible)* |
-
-> **Why three wheels, not one?** nanobind's stable ABI (`abi3`) exists only from
-> CPython 3.12, and `abi3` is *forward*-compatible only (a 3.12-built wheel runs
-> on 3.12/3.13+, never on 3.10/3.11). So 3.10 and 3.11 get version-specific
-> wheels and 3.12 ships one `abi3` wheel that also serves 3.13+.
-
-`jaxlib < 0.5` (the pre-FFI custom-call era, e.g. 0.4.x) is **not** supported.
-
-### CUDA / GPU
-
-GPU support uses the classic dense **cuSOLVER** routines
-(`cusolverDn{S,D}sygvd`, `cusolverDn{C,Z}hegvd`) and is dispatched through JAX's
-GPU FFI under `platform="gpu"`.
-
-| Aspect | Support | Notes |
-| --- | --- | --- |
-| CUDA major version | **CUDA 12 only** | JAX ≥0.5 ships only `cuda12` plugins (`jax[cuda12]`). CUDA 11 is **not** supported — it would require `jax[cuda11]`, dropped in modern JAX. |
-| Prebuilt wheels | **`eigh-cuda120`** (CUDA 12.0, glibc 2.17) and **`eigh-cuda128`** (CUDA 12.8, glibc 2.34) | `eigh-cuda120` is forward-compatible to 12.8+ and the safer default; `eigh-cuda128` targets modern toolchains. Any CUDA 12.x toolkit can also build from source. |
-| cuSOLVER API | CUDA 8+ | The `*sygvd`/`*hegvd` dense API is long-stable, so there is no upper CUDA-12 bound from the API surface. |
-| Compute capability | nvcc default for the toolkit | No explicit `-arch` is set; PTX JITs forward to newer GPUs. Set `CMAKE_CUDA_ARCHITECTURES` to target a specific SM. |
-| FFI ABI across JAX | Same `MAJOR == 0` stability as CPU | The GPU handler is forward-compatible across jax 0.5→0.10 just like the CPU one. |
-| Source-build jaxlib range | **jaxlib 0.4.29 and 0.5 → 0.10+** | Building from source works against the cluster's own jaxlib (incl. the old 0.4.29 some CUDA-12.0 clusters pin); the FFI accessor/registration differences are bridged internally. Prebuilt wheels still require jaxlib ≥ 0.5 (forward-only binary ABI). |
-
-**Where the GPU path breaks / what to know:**
-- **Prebuilt GPU wheels:** `pip install eigh-cuda120` (CUDA 12.0+, the safer
-  default) or `eigh-cuda128` (CUDA 12.8+), Linux x86_64. The default `pip install
-  eigh` is **CPU-only** — pairing it with `jax[cuda12]` does *not* enable GPU,
-  because the CUDA kernel must be compiled into the wheel and the CPU wheel does
-  not contain it.
-- **GPU wheels are built in CI but not GPU-tested there** (no GPU runner); CI
-  only checks the extension loads. Verify on real hardware before relying on a
-  release.
-- **CUDA 11 clusters are unsupported** (see table) — use a CUDA 12 module/env.
-- For other CUDA versions or platforms, build from source (below). The build
-  auto-detects CUDA via `check_language(CUDA)`; set `EIGH_REQUIRE_CUDA=ON` to
-  make a missing `nvcc` a hard error instead of silently skipping the GPU module.
-- A GPU build is **not** portable the way the CPU wheel is: it must match the
-  cluster's CUDA 12 runtime and driver.
-
-### Clusters / HPC
-
-- **glibc:** Linux wheels target `manylinux_2_28` (glibc 2.28) — runs on RHEL 8+,
-  Ubuntu 18.04+, and most current HPC. CentOS 7 / RHEL 7 (glibc 2.17, EOL) is
-  not supported; build from source there.
-- **BLAS/LAPACK:** `auditwheel` bundles OpenBLAS + libgfortran into the Linux
-  wheel, so cluster nodes **do not** need a system BLAS installed.
-- **GPU nodes:** build from source as above; the published wheel is CPU-only.
-
-
+Full detail — the FFI binary-ABI rules, why GPU ships as separate packages, the
+abi3 wheel matrix, HPC/cluster notes, and how to build on a pinned old `jaxlib` —
+is in **[docs/TECHNICAL_NOTES.md](docs/TECHNICAL_NOTES.md)**.
 
 ### References
 - [1] Kasim, M. F., & Vinko, S. M. *Learning the exchange–correlation functional from nature with fully differentiable density functional theory.* Phys. Rev. Lett. **127**, 126403 (2021). https://doi.org/10.1103/PhysRevLett.127.126403
