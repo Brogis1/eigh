@@ -12,7 +12,8 @@ JAX 0.5–0.10+. See [Installation](#installation--quick-start) and
 
 > ### New
 > - Core code rewritten to be able to run on older cluster with JAX 0.4.XX for instance (most likely on GPU clusters).
-> - Builds for CUDA but I recommend just building from source, fast and easy with this package (it will work for your specific JAX version).
+> - Builds for CUDA available. But I recommend just compiling from source, fast and easy (it will work for your specific JAX version).
+> - Works fine on GPU, tested.
 
 ## Features
 - **Generalized Problems**: `A @ V = B @ V @ diag(W)`, etc.
