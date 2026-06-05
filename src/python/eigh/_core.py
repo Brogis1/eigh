@@ -26,6 +26,37 @@ try:
 except ImportError:
     from jax.extend import ffi
 
+
+def _register_ffi_target(name, capsule, *, platform, api_version):
+    """Register an FFI/custom-call target across jax versions.
+
+    The Python-side registration API moved over time:
+      * jax 0.5+      -> `jax.ffi.register_ffi_target`
+      * jax ~0.4.31-0.4.x -> `jax.extend.ffi.register_ffi_target`
+      * jax <= ~0.4.30 -> no `register_ffi_target`; use the equivalent
+        `xla_client.register_custom_call_target` (same
+        (name, fn, platform, api_version) signature).
+    This shim picks whichever exists, so import works on the whole range.
+
+    NOTE: this only fixes the *registration call*. The compiled handler also has
+    a binary FFI ABI. That ABI is forward-compatible (a handler built against an
+    older jaxlib loads on newer ones) but NOT backward-compatible: a handler
+    built against jaxlib >= 0.5 will FAIL at runtime on jaxlib <= ~0.4.33 with
+    `Unexpected XLA_FFI_Handler_Register size` because the struct grew. The
+    published wheels are built against jaxlib 0.5, so jaxlib 0.5 is the real
+    runtime floor for them; very old jaxlib (e.g. 0.4.29) must build from source
+    against that same jaxlib.
+    """
+    register = getattr(ffi, "register_ffi_target", None)
+    if register is not None:
+        register(name, capsule, platform=platform, api_version=api_version)
+        return
+    # Fallback for jax without register_ffi_target (<= ~0.4.30).
+    from jax.lib import xla_client
+    xla_client.register_custom_call_target(
+        name, capsule, platform=platform, api_version=api_version
+    )
+
 import jax
 from jax import lax
 from jax import numpy as jnp
@@ -77,7 +108,7 @@ except ImportError:
 # Register FFI targets
 if _lapack_available:
     for _name, _value in lapack_registrations().items():
-        ffi.register_ffi_target(
+        _register_ffi_target(
             _name,
             _value,
             platform="cpu",
@@ -86,7 +117,7 @@ if _lapack_available:
 
 if _cuda_available:
     for _name, _value in cuda_registrations().items():
-        ffi.register_ffi_target(
+        _register_ffi_target(
             _name,
             _value,
             platform="gpu",
