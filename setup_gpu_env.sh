@@ -8,6 +8,22 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # CUDA 12.8.1 paths
 CUDA_ROOT=/softs/nvidia/sdk/12.8.1
 
+# Add the base Python's shared library directory to LD_LIBRARY_PATH.
+# The venv interpreter links against libpython3.10.so.1.0, which lives in the
+# base Python install's lib dir (a shared-library build), not on the default
+# loader path. Derive it from pyvenv.cfg so it survives a venv rebuild.
+PYVENV_CFG="${SCRIPT_DIR}/.venv/pyvenv.cfg"
+if [ -f "${PYVENV_CFG}" ]; then
+    PYTHON_HOME="$(awk -F'= *' '/^home/ {print $2}' "${PYVENV_CFG}")"
+    if [ -n "${PYTHON_HOME}" ]; then
+        # home points at .../bin; the libs are in the sibling lib/ directory
+        PYTHON_LIB="$(cd "${PYTHON_HOME}/../lib" 2>/dev/null && pwd)"
+        if [ -n "${PYTHON_LIB}" ]; then
+            export LD_LIBRARY_PATH="${PYTHON_LIB}:$LD_LIBRARY_PATH"
+        fi
+    fi
+fi
+
 # Add wheel-bundled NVIDIA library paths (for JAX CUDA plugin)
 VENV_NVIDIA="${SCRIPT_DIR}/.venv/lib/python3.10/site-packages/nvidia"
 if [ -d "${VENV_NVIDIA}" ]; then
